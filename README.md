@@ -15,3 +15,6 @@ Measuring size of objects: https://www.pyimagesearch.com/2016/03/28/measuring-si
 
 
 https://www.pyimagesearch.com/2016/02/15/determining-object-color-with-opencv/
+
+https://www.pyimagesearch.com/2015/05/04/target-acquired-finding-targets-in-drone-and-quadcopter-video-streams-using-python-and-opencv/
+
