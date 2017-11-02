@@ -55,34 +55,14 @@ while(True):
 
 	# Bitwise-AND mask the original image 
 	res = cv2.bitwise_and(frame, frame, mask = mask)
-	#res = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
-
-	# Detect circle 
-	# circles = cv2.HoughCircles(res,cv2.HOUGH_GRADIENT, 1, 20, 
-	# 			param1=50, param2=30, minRadius=0, maxRadius=0)
-
-	# circles = np.uint16(np.around(circles)) 
-	# for i in circles[0,:]: 
-	# 	# Draw outer circle 
-	# 	cv2.circle(res, (i[0],i[1]),i[2],(0,255,0),2)
-	# 	# Draw centre of circle 
-	# 	cv2.circle(res, (i[0],i[1]), 2, (0,0,255), 3)
 
 	#Display resulting frame 
 	cv2.imshow('frame', frame)
 	cv2.imshow('mask', mask)
 	cv2.imshow(wnd, res)
-	#cv2.imshow('detected circles',res)
 	if cv2.waitKey(1) & 0xFF == ord('q'): 
 		break
 
 # Release capture when done 
 cap.release() 
 cv2.destroyAllWindows() 
-
-
-
-
-### References: 
-# Creating slider bars in opencv:  
-# https://botforge.wordpress.com/2016/07/02/basic-color-tracker-using-opencv-python/
