@@ -10,3 +10,8 @@
 Overall Tutorial: http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_tutorials.html
 
 Creating slider bars in openCV: https://botforge.wordpress.com/2016/07/02/basic-color-tracker-using-opencv-python/
+
+Measuring size of objects: https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/
+
+
+https://www.pyimagesearch.com/2016/02/15/determining-object-color-with-opencv/
