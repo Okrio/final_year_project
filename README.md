@@ -6,6 +6,9 @@
 ## References: 
 
 ## Coding Help: 
+### Git References: 
+Branching Tips: http://nvie.com/posts/a-successful-git-branching-model/
+
 ### OpenCV: 
 Overall Tutorial: http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_tutorials.html
 
