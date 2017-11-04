@@ -1,5 +1,13 @@
 # Final Year Project Repository 
 # Tasks: 
+Phase 1: 
+1. ~~Set up relevant environments~~ (Autumn Term, Week 3)
+2. ~~Set up version control environment (Git)~~ (Autumn Term, Week 3) 
+3. ~~Isolate coloured dots in OpenCV~~ (Autumn Term, Week 3) 
+4. ~~Track coloured dots using contours~~ (Autumn Term, Week 4) 
+5. Determine pixel size 
+6. Map pixel size to relative distance from camera 
+7. Determine pixel location of contours
 
 # Project Management Timeline: 
 
