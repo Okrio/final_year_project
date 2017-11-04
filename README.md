@@ -11,6 +11,7 @@ Phase 1:
 
 Need to figure out a way to account for angle problems with the circles! 
 Use a reference contour and compare the area to the area obtained by minenclosingcircle to zero the program? 
+Will use a square instead to detect out targets and determine if they are in the correct aspect ratio! Then you can estimate whether the camera is looking at them straight, or how the degree of change is like! 
 
 # Project Management Timeline: 
 
