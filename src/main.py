@@ -34,7 +34,6 @@ while(True):
 	cv2.imshow('thres', thresh)
 
 
-
 	# # Bitwise-AND mask the original image 
 	# res = cv2.bitwise_and(frame, frame, mask = mask)
 

@@ -30,13 +30,24 @@ while(True):
 	edged = cv2.erode(edged, None, iterations=1)
 
 	# Find and Draw Contours 
-	output, contours, hierarchy = cv2.findContours(edged,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
-	cv2.drawContours(frame, contours, -1, (0,255,0), 2)
+	output, contours, hierarchy = cv2.findContours(edged,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+	cv2.drawContours(frame, contours, 3 , (0,255,0), 2)
 	# arg 1: Draw contours on frame 
 	# arg 2: List of contours found 
 	# arg 3: -1: All contours 
 	# arg 4: Colour of contours 
 	# arg 5: Thickness of contours 
+
+	# Determine size of area inside contour 
+	
+
+
+
+	# Determine the pixels inside contour 
+	# for c in contours: 
+	# 	#(x, y), radius = cv2.minEnclosingCircle(c)
+	# 	print ('contours detected are: ', c)
+	# 	print ('contour area: ', cv2.contourArea(c))
 
 	### Displays 
 	cv2.putText(frame, status, (20,30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)

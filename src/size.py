@@ -8,6 +8,7 @@ hul, huh = 145, 164 # Hue
 sal, sah = 58, 182 # Saturation
 val, vah = 165, 255 # Value
 
+# Convert 
 HSVLOW=np.array([hul,sal,val])
 HSVHIGH=np.array([huh,sah,vah])
 
