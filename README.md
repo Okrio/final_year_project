@@ -9,6 +9,9 @@ Phase 1:
 6. Map pixel size to relative distance from camera 
 7. Determine pixel location of contours
 
+Need to figure out a way to account for angle problems with the circles! 
+Use a reference contour and compare the area to the area obtained by minenclosingcircle to zero the program? 
+
 # Project Management Timeline: 
 
 ## References: 
@@ -24,6 +27,9 @@ Creating slider bars in openCV: https://botforge.wordpress.com/2016/07/02/basic-
 
 Measuring size of objects: https://www.pyimagesearch.com/2016/03/28/measuring-size-of-objects-in-an-image-with-opencv/
 
+Contour Features: https://docs.opencv.org/3.3.0/dd/d49/tutorial_py_contour_features.html
+
+Contour Hierarchy: https://docs.opencv.org/trunk/d9/d8b/tutorial_py_contours_hierarchy.html
 
 https://www.pyimagesearch.com/2016/02/15/determining-object-color-with-opencv/
 
