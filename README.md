@@ -31,6 +31,8 @@ Contour Features: https://docs.opencv.org/3.3.0/dd/d49/tutorial_py_contour_featu
 
 Contour Hierarchy: https://docs.opencv.org/trunk/d9/d8b/tutorial_py_contours_hierarchy.html
 
+Shape Descriptors: https://docs.opencv.org/2.4.13.2/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html
+
 https://www.pyimagesearch.com/2016/02/15/determining-object-color-with-opencv/
 
 https://www.pyimagesearch.com/2015/05/04/target-acquired-finding-targets-in-drone-and-quadcopter-video-streams-using-python-and-opencv/
