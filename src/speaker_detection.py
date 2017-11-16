@@ -1,6 +1,9 @@
 import numpy as np 
 import cv2 
 
+# User defined variables 
+font = cv2.FONT_HERSHEY_SIMPLEX
+
 cap = cv2.VideoCapture(0) 
 
 # HSV Color Sensitivity Ranges 
@@ -18,7 +21,11 @@ HSVHIGH=np.array([huh,sah,vah])
 
 while (True): 
 	ret, original_frame = cap.read() 
-	status = "No Speaker Detected"
+
+	# Status and printouts
+	detected_status = "No Speaker Detected"
+	aspect_ratio_text = "Aspect Ratio Unavailable"
+	size_text = "Size Unavailable"
 
 	# Image Processing 
 	blurred = cv2.GaussianBlur(original_frame,(5,5),0)
@@ -57,11 +64,16 @@ while (True):
 
 			if keepAspectRatio and keepSolidity and keepDims: 
 				cv2.drawContours(original_frame, [approx], -1, (0,0,255),2)
-				status = str(aspect_ratio)
+				detected_status = "Speaker Detected"
+				aspect_ratio_text = str(aspect_ratio)
+				size_text = str(area) 
 
 
 	# Display 
-	cv2.putText(original_frame, status, (20,30), cv2.FONT_HERSHEY_SIMPLEX,0.5,(0,0,255),1)
+	cv2.putText(original_frame, detected_status, (20,30), font, 0.5,(0,0,255), 1)
+	cv2.putText(original_frame, aspect_ratio_text, (20,60), font, 0.5,(255,0,0), 1)
+	cv2.putText(original_frame, size_text, (20, 90), font, 0.5, (0, 255, 0), 1)
+
 	cv2.imshow('Original', original_frame)
 	cv2.imshow('Edged', edged)
 	
