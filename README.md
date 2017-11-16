@@ -1,15 +1,14 @@
 # Final Year Project Repository 
-# Tasks: 
+# Progress: 
 Phase 1: 
-
-~~1. Set up relevant environments (Autumn Term, Week 3)
+1. Set up relevant environments (Autumn Term, Week 3) 
 2. Set up version control environment (Git) (Autumn Term, Week 3) 
-3.Isolate coloured dots in OpenCV (Autumn Term, Week 3) 
-4. Track coloured dots using contours (Autumn Term, Week 4) 
+3. Isolated coloured dots in OpenCV (Autumn Term, Week 3) 
+4. Tracked coloured dots using contours (Autumn Term, Week 4) 
 5. Replaced dots with a surrounding coloured border (Autumn Term, Week 6) 
 6. Used both masking colours and canny edge detection to better isolate the desired image (Autumn Term, Week 6) 
 7. Designed a simple algorithm to differentiate desired/appropriate contours (Autumn Term, Week 6) 
-8. Detects coloured border and able to obtain size of bounded object in pixels (Autumn Term, Week 6) ~~
+8. Detected coloured border and able to obtain size of bounded object in pixels (Autumn Term, Week 6)
 9. Map pixel size to relative distance from a normal webcamera 
 10. Determine pixel location of contours 
 
