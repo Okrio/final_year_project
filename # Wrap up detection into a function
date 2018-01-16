@@ -1,0 +1,32 @@
+# Wrap up detection into a function 
+- Input: Tstart and Tend 
+- Makes log of position every interval 
+- Output: Vector of timestamps and positions of the speaker 
+(Can plot position against timestamp and see if there's movement)
+
+- Best current estimate 
+- Smooth the estimate position 
+
+# Tracking (Good add on)
+- Instantaneous estimates of a quantity 
+- Dynamic model - is the thing stationary or moving? 
+- Even if missing in one frame - can still know its i.e moving left 
+(Potential for continuous calibration)
+
+Step 1: 
+Function getPosition: Get 1 frame with position
+Output: If detected, return result; 
+		else, return NULL 
+
+
+Simple: 
+- getPosition
+
+Advanced: 
+- Start tracking 
+- Stop tracking 
+
+Complex: (Look at trackers - Kalman Filter)
+- Start tracking
+- getPositionNow
+- Stop tracking 
