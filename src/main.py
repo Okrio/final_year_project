@@ -2,7 +2,6 @@ import toolbox as tb
 import numpy as np 
 import cv2 
 
-
 # User defined variables 
 font = cv2.FONT_HERSHEY_SIMPLEX
 
