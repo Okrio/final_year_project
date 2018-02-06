@@ -1,4 +1,12 @@
 # Final Year Project Repository 
+# To Do: 
+1) Figure out a way to make edges more robust without colour filtering 
+2) Interface spherical camera to OpenCV in Windows
+
+
+
+
+
 # Progress: 
 Phase 1: 
 1. Set up relevant environments (Autumn Term, Week 3) 
