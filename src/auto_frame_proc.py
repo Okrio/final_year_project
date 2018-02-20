@@ -7,24 +7,24 @@ def nothing(self):
 	pass 
 
 # Initialisation
-img = cv2.imread('images/test_1.jpg', 1)
-img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
+original_img = cv2.imread('images/test_5.jpg', 1)
+img = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY) 
 
 cv2.namedWindow('output_edged', cv2.WINDOW_NORMAL)
 cv2.namedWindow('output_original', cv2.WINDOW_NORMAL)
-
-cv2.createTrackbar('Pixel Thresholder', 'output_edged', 0, 255, nothing)
 
 sigma = 0.33
 v = np.median(img)
 lower = int(max(0, (1.0 - sigma) * v))
 upper = int(min(255, (1.0 + sigma) * v))
 
+pixel_threshold = 10 
+
 # Image Pre-processing: 
 blurred = cv2.GaussianBlur(img, (5,5), 0)
 
 while(1): 
-	pixel_threshold = cv2.getTrackbarPos('Pixel Thresholder', 'output_edged')  
+	#pixel_threshold = cv2.getTrackbarPos('Pixel Thresholder', 'output_edged')  
 	ret, th1 = cv2.threshold(blurred, pixel_threshold, 255, cv2.THRESH_BINARY_INV)
 
 	edged = cv2.Canny(th1, lower, upper)
@@ -38,7 +38,6 @@ while(1):
 										cv2.CHAIN_APPROX_NONE
 										)
 
-	#contours = sorted(contours, key = cv2.contourArea, reverse= True)[:5]
 	for c in contours: 
 		perimeter = cv2.arcLength(c, True)
 		epsilon = 0.01*perimeter
@@ -64,22 +63,27 @@ while(1):
 			speakerPosition = cX, cY 
 
 			if keepAspectRatio and keepSolidity and keepDims:
-				cv2.drawContours(img, [approx], -1, (0,0,255),2)
+				cv2.drawContours(original_img, [approx], -1, (0,0,255),2)
 				position_text = "Speaker Position: " + str(speakerPosition)
-				cv2.putText(img, position_text, (cX, cY-15), font, 0.5,(0,0,255), 2)
-				cv2.putText(img, "x", speakerPosition, font, 0.5, (0, 255, 0), 1) 
+				cv2.putText(original_img, position_text, (cX, cY-15), font, 0.5,(0,0,255), 2)
+				cv2.putText(original_img, "x", speakerPosition, font, 0.5, (0, 255, 0), 1) 
+				cv2.putText(original_img, str(pixel_threshold), (cX, cY-30), font, 0.5,(0,0,255), 2)
 
+
+	if pixel_threshold < 255: 
+		pixel_threshold += 1
 
 	cv2.resizeWindow('output_edged', 1000, 800)
 	cv2.imshow('output_edged', edged)
 
 	cv2.resizeWindow('output_original', 1000, 800)
-	cv2.imshow('output_original', img)
+	cv2.imshow('output_original', original_img)
 
 	if cv2.waitKey(1) & 0xFF == ord('q'): 
 		break
 
 cv2.destroyAllWindows() 
+
 
 
 # Need to create a frame that is very high contrast 
