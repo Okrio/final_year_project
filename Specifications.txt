@@ -1,0 +1,5 @@
+Laptop Screen Resolution: 1920x1080 pixels (508x285mm) 
+RICOH Theta Resolution: 5376x2688 pixels 
+
+Links: 
+OpenCV Panning: https://stackoverflow.com/questions/28595958/creating-trackbars-to-scroll-large-image-in-opencv-python

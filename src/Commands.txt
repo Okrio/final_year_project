@@ -1,0 +1,17 @@
+Commands from bash to record and play the samples 
+
+arecord -D hw:CARD=XTC23640801,DEV=0 --format=S32_LE -c 24 -r 44100 "Test.wav" 
+
+aplay Test_default.wav 
+
+arecord -l
+
+alsamixer
+
+
+
+http://lists.theta360.guide/t/ricoh-theta-api-over-usb-cable-s-v-sc-models/65/2
+
+http://gphoto-software.10949.n7.nabble.com/gphoto2-Error-53-Could-not-claim-the-USB-device-td2218.html
+
+lists.theta360.guide/t/ricoh-theta-api-over-usb-cable-s-v-sc-models/65/2
