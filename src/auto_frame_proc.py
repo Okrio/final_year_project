@@ -84,8 +84,6 @@ while(1):
 
 cv2.destroyAllWindows() 
 
-
-
 # Need to create a frame that is very high contrast 
 
 

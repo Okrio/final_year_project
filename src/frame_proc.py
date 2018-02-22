@@ -22,7 +22,7 @@ upper = int(min(255, (1.0 + sigma) * v))
 
 # Image Pre-processing: 
 blurred = cv2.GaussianBlur(img, (5,5), 0)
-
+q
 while(1): 
 	pixel_threshold = cv2.getTrackbarPos('Pixel Thresholder', 'output_edged')  
 	ret, th1 = cv2.threshold(blurred, pixel_threshold, 255, cv2.THRESH_BINARY_INV)

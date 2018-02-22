@@ -2,6 +2,7 @@
 # bash -x camera_script.sh
 
 echo "Image Captures Initiated: "
+cd .. 
 cd images 
 
 gphoto2 --capture-image-and-download
