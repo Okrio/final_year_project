@@ -1,46 +1,55 @@
 import toolbox as tb
-import numpy as np 
+import numpy as np
 import cv2 
 
-# User defined variables 
+# Variables: 
+pixel_threshold = 10 
 font = cv2.FONT_HERSHEY_SIMPLEX
 
-cap = cv2.VideoCapture(0) 
+# Input Image: 
+img = cv2.imread('images/test_5.jpg', 1)
+gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+blurred = cv2.GaussianBlur(gray_img, (5,5), 0)
 
-# Mask Colour Ranges:
-hul, huh = 119, 179 # Hue 
-sal, sah = 51, 243 # Saturation
-val, vah = 0, 255 # Value
+canny_low, canny_high = tb.setEdgeParameters(img)
 
-# Convert ranges into arrays for masking 
-HSVLOW=np.array([hul,sal,val])
-HSVHIGH=np.array([huh,sah,vah])
+# Set Up Windows: 
+cv2.namedWindow('output_edged', cv2.WINDOW_NORMAL)
+cv2.namedWindow('output_img', cv2.WINDOW_NORMAL)
 
-# Start Video Analysis
-while (True):
-	ret, frame = cap.read()
-	 
-	detected_text = "Speaker Not Found"
-	position_text = "Position Unavailable"
+while(1): 
+	# Binary intensity sweep
+	ret, th1 = cv2.threshold(blurred, pixel_threshold, 255,
+		cv2.THRESH_BINARY_INV)
+	
+	# Canny Edge Detection post-binary sweep
+	edged = cv2.Canny(th1, canny_low, canny_high)
+	edged = cv2.dilate(edged, None, iterations = 1)
+	edged = cv2.erode(edged, None, iterations = 1)
 
-	c, approx, moments = tb.findSpeaker(frame, HSVLOW, HSVHIGH)
+	output, contours, hierarchy = cv2.findContours(
+										edged, 
+										cv2.RETR_EXTERNAL, 
+										cv2.CHAIN_APPROX_SIMPLE
+										)
+	for c in contours: 
+		foundSpeaker, approx = tb.findSpeaker(c) 
 
-	isDetected = len(c) and len(approx) 
+		if foundSpeaker: 
+			cv2.drawContours(img, approx, -1, (0,0,255), 2)
+			tb.displayText(img, c, pixel_threshold)
 
-	if isDetected: 
-		cv2.drawContours(frame, [approx], -1, (0,0,255),2)
-		speakerPosition = tb.getPosition(moments) 
 
-		# Update Display
-		detected_text = "Speaker Detected"
-		position_text = "Speaker Position: " + str(speakerPosition) 
-		cv2.putText(frame, "x", speakerPosition, font, 0.5, (0, 255, 0), 1)
+	if pixel_threshold < 255: 
+		pixel_threshold += 1
 
-	tb.displayText(frame, detected_text, position_text)
-	cv2.imshow('Original', frame)
+	cv2.resizeWindow('output_edged', 1000, 800)
+	cv2.imshow('output_edged', edged)
+
+	cv2.resizeWindow('output_img', 1000, 800)
+	cv2.imshow('output_img', img)
 
 	if cv2.waitKey(1) & 0xFF == ord('q'): 
 		break
 
-cap.release() 
 cv2.destroyAllWindows() 

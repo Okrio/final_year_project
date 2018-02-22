@@ -1,64 +1,60 @@
-import numpy as np 
+############### Toolbox ############## 
+import numpy as np
 import cv2 
 
-def prepareFrame(input_frame, HSVLOW, HSVHIGH): 
-	blurred = cv2.GaussianBlur(input_frame, (5,5), 0)
-	mask = cv2.inRange(cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV), HSVLOW ,HSVHIGH)
-	edged = cv2.Canny(mask, 50, 150)
-	edged = cv2.dilate(edged, None, iterations=1)
-	edged = cv2.erode(edged, None, iterations=1)
-	return edged
+def findSpeaker(c): 
+	perimeter = cv2.arcLength(c, True)
+	epsilon = 0.01*perimeter 
+	approx = cv2.approxPolyDP(c, epsilon, True)
 
-def findSpeaker(frame, HSVLOW, HSVHIGH):
-	edged = prepareFrame(frame, HSVLOW, HSVHIGH)
-	output, contours, hierarchy = cv2.findContours(
-										edged, 
-										cv2.RETR_EXTERNAL, 
-										cv2.CHAIN_APPROX_SIMPLE
-										)
-	# Sort largest 5 contours
-	contours = sorted(contours, key = cv2.contourArea, reverse= True)[:5]
+	if len(approx) == 4: 
+		(x,y,w,h) = cv2.boundingRect(approx) 
+		aspect_ratio = w/float(h) 
+		area = cv2.contourArea(c)
+		hullArea = cv2.contourArea(cv2.convexHull(c))
+		solidity = area/float(hullArea)
 
-	for c in contours: 
-		perimeter = cv2.arcLength(c, True)
-		epsilon = 0.05*perimeter # Larger value allows for higher tolerances for bad shapes
-		approx = cv2.approxPolyDP(c, epsilon, True)
+		# Check for Flags: 
+		keepSolidity = solidity > 0.9 
+		keepAspectRatio = aspect_ratio >= 0.8 and aspect_ratio <=1.2
+		keepDims = w > 10 and h > 10
 
-		if len(approx) >= 4 and len(approx) <= 6: # Checks for number of vertices 
-		# Due to gaussian and motion blur, although looking for a square, may not actually get a square
-			(x,y,w,h) = cv2.boundingRect(approx) 
-			aspect_ratio = w/float(h) 
+		print(keepSolidity, keepAspectRatio, keepDims) 
 
-			area = cv2.contourArea(c)
-			hullArea = cv2.contourArea(cv2.convexHull(c))
-			solidity = area/float(hullArea)
-
-			keepSolidity = solidity > 0.9 
-			keepDims = w > 50 and h > 50 # Speaker should be larger than 50x50 pixels in room
-			keepAspectRatio = aspect_ratio >= 0.8 and aspect_ratio <=1.2 # Approximately square
-
-			M = cv2.moments(c) 
-
-			if keepAspectRatio and keepSolidity and keepDims:
-				return c, approx, M 
-
-			else:
-				return [], [], [] # Return empty arrays
+		# Found Speaker: 
+		if keepAspectRatio and keepSolidity and keepDims:
+			return True, [approx]
 		else: 
-			return [], [], []
+			return False, [] 
+	else: 
+		return False, []
 
-def getPosition(imageMoment):
-	if imageMoment['m00'] != 0: 
-		cX = int(imageMoment['m10']/imageMoment['m00'])
-		cY = int(imageMoment['m01']/imageMoment['m00'])
+def setEdgeParameters(img):
+	# Input: Image frame 
+	# Output: Adaptive thresholds for Canny Edge Detection 
+	sigma = 0.33 
+	v = np.median(img) 
+	lower_threshold = int(max(0, (1.0 - sigma) * v))
+	upper_threshold = int(min(255, (1.0 + sigma) * v))
+
+	return lower_threshold, upper_threshold 
+
+def getPosition(contour):
+	# Input: Contour
+	# Output: Pixel position of contour center
+	M = cv2.moments(contour) 
+	if M['m00']!=0: 
+		cX = int(M['m10']/M['m00'])
+		cY = int(M['m01']/M['m00'])
 	else: 
 		cX, cY = 0, 0
+	return cX, cY 
 
-	speakerPosition = cX, cY
-
-	return speakerPosition
-
-def displayText(frame, detected_text, position_text): 
-	font = cv2.FONT_HERSHEY_SIMPLEX
-	cv2.putText(frame, detected_text, (20,30), font, 0.5, (0,0,255), 1)
-	cv2.putText(frame, position_text, (20,60), font, 0.5, (0,255,0), 1)
+def displayText(img, contour, pixel_threshold):
+	# Input: Image frame, contour, current_pixel_threshold 
+	font = cv2.FONT_HERSHEY_SIMPLEX 
+	cX, cY = getPosition(contour) 
+	position_text = "Speaker Position: " + str(getPosition(contour))
+	cv2.putText(img, position_text, (cX, cY - 15), font, 0.5, (0,0,255), 2)
+	cv2.putText(img, "x", (cX, cY), font, 0.5, (0, 255, 0), 1) 
+	cv2.putText(img, str(pixel_threshold), (cX, cY - 30), font, 0.5, (0,0,255), 2)

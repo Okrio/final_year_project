@@ -7,7 +7,7 @@ def nothing(self):
 	pass 
 
 # Initialisation
-original_img = cv2.imread('images/test_5.jpg', 1)
+original_img = cv2.imread('images/test_1.jpg', 1)
 img = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY) 
 
 cv2.namedWindow('output_edged', cv2.WINDOW_NORMAL)
@@ -62,6 +62,7 @@ while(1):
 				cX, cY = 0, 0
 			speakerPosition = cX, cY 
 
+			print(keepSolidity, keepAspectRatio, keepDims)
 			if keepAspectRatio and keepSolidity and keepDims:
 				cv2.drawContours(original_img, [approx], -1, (0,0,255),2)
 				position_text = "Speaker Position: " + str(speakerPosition)
