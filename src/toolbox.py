@@ -56,3 +56,55 @@ def displayText(img, contour, pixel_threshold):
 	cv2.putText(img, position_text, (cX, cY - 15), font, 0.5, (0,0,255), 2)
 	cv2.putText(img, "x", (cX, cY), font, 0.5, (0, 255, 0), 1) 
 	cv2.putText(img, str(pixel_threshold), (cX, cY - 30), font, 0.5, (0,0,255), 2)
+
+def detectSpeaker(img): 
+	pixel_threshold = 10 
+	font = cv2.FONT_HERSHEY_SIMPLEX
+	foundSpeaker = False 
+
+	gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+	blurred = cv2.GaussianBlur(gray_img, (5,5), 0)
+
+	canny_low, canny_high = setEdgeParameters(img)
+
+	# Set Up Windows: 
+	cv2.namedWindow('output_edged', cv2.WINDOW_NORMAL)
+	cv2.namedWindow('output_img', cv2.WINDOW_NORMAL)
+
+	while(foundSpeaker == False): 
+		# Binary intensity sweep
+		ret, th1 = cv2.threshold(blurred, pixel_threshold, 255,
+			cv2.THRESH_BINARY_INV)
+		
+		# Canny Edge Detection post-binary sweep
+		edged = cv2.Canny(th1, canny_low, canny_high)
+		edged = cv2.dilate(edged, None, iterations = 1)
+		edged = cv2.erode(edged, None, iterations = 1)
+
+		# Display Canny Edge Changes 
+		# cv2.resizeWindow('output_edged', 1000, 800)
+		# cv2.imshow('output_edged', edged)
+
+		# Finding and Drawing Contour: 
+		output, contours, hierarchy = cv2.findContours(
+											edged, 
+											cv2.RETR_EXTERNAL, 
+											cv2.CHAIN_APPROX_SIMPLE
+											)
+		for c in contours: 
+			foundSpeaker, approx = findSpeaker(c) 
+
+			if foundSpeaker: 
+				cv2.drawContours(img, approx, -1, (0,0,255), 2)
+				displayText(img, c, pixel_threshold)
+				cv2.resizeWindow('output_img', 1000, 800)
+				cv2.imshow('output_img', img)
+
+				return getPosition(c)
+				break 
+				
+		if pixel_threshold < 255: 
+			pixel_threshold += 5
+
+		if cv2.waitKey(1) & 0xFF == ord('q'): 
+			break
