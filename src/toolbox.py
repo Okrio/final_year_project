@@ -18,9 +18,7 @@ def findSpeaker(c):
 		keepSolidity = solidity > 0.9 
 		keepAspectRatio = aspect_ratio >= 0.8 and aspect_ratio <=1.2
 		keepDims = w > 10 and h > 10
-
-		print(keepSolidity, keepAspectRatio, keepDims) 
-
+ 
 		# Found Speaker: 
 		if keepAspectRatio and keepSolidity and keepDims:
 			return True, [approx]

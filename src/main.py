@@ -7,7 +7,7 @@ pixel_threshold = 10
 font = cv2.FONT_HERSHEY_SIMPLEX
 
 # Input Image: 
-img = cv2.imread('images/test_5.jpg', 1)
+img = cv2.imread('images/test_1.jpg', 1)
 gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 blurred = cv2.GaussianBlur(gray_img, (5,5), 0)
 
@@ -38,10 +38,10 @@ while(1):
 		if foundSpeaker: 
 			cv2.drawContours(img, approx, -1, (0,0,255), 2)
 			tb.displayText(img, c, pixel_threshold)
-
+			
 
 	if pixel_threshold < 255: 
-		pixel_threshold += 1
+		pixel_threshold += 5
 
 	cv2.resizeWindow('output_edged', 1000, 800)
 	cv2.imshow('output_edged', edged)
