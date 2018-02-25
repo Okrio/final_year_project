@@ -2,31 +2,6 @@
 import numpy as np
 import cv2 
 
-def findSpeaker(c): 
-	perimeter = cv2.arcLength(c, True)
-	epsilon = 0.01*perimeter 
-	approx = cv2.approxPolyDP(c, epsilon, True)
-
-	if len(approx) == 4: 
-		(x,y,w,h) = cv2.boundingRect(approx) 
-		aspect_ratio = w/float(h) 
-		area = cv2.contourArea(c)
-		hullArea = cv2.contourArea(cv2.convexHull(c))
-		solidity = area/float(hullArea)
-
-		# Check for Flags: 
-		keepSolidity = solidity > 0.9 
-		keepAspectRatio = aspect_ratio >= 0.8 and aspect_ratio <=1.2
-		keepDims = w > 10 and h > 10
- 
-		# Found Speaker: 
-		if keepAspectRatio and keepSolidity and keepDims:
-			return True, [approx]
-		else: 
-			return False, [] 
-	else: 
-		return False, []
-
 def setEdgeParameters(img):
 	# Input: Image frame 
 	# Output: Adaptive thresholds for Canny Edge Detection 
@@ -57,6 +32,31 @@ def displayText(img, contour, pixel_threshold):
 	cv2.putText(img, "x", (cX, cY), font, 0.5, (0, 255, 0), 1) 
 	cv2.putText(img, str(pixel_threshold), (cX, cY - 30), font, 0.5, (0,0,255), 2)
 
+def findSpeaker(c): 
+	perimeter = cv2.arcLength(c, True)
+	epsilon = 0.01*perimeter 
+	approx = cv2.approxPolyDP(c, epsilon, True)
+
+	if len(approx) == 4: 
+		(x,y,w,h) = cv2.boundingRect(approx) 
+		aspect_ratio = w/float(h) 
+		area = cv2.contourArea(c)
+		hullArea = cv2.contourArea(cv2.convexHull(c))
+		solidity = area/float(hullArea)
+
+		# Check for Flags: 
+		keepSolidity = solidity > 0.9 
+		keepAspectRatio = aspect_ratio >= 0.8 and aspect_ratio <=1.2
+		keepDims = w > 10 and h > 10
+ 
+		# Found Speaker: 
+		if keepAspectRatio and keepSolidity and keepDims:
+			return True, [approx]
+		else: 
+			return False, [] 
+	else: 
+		return False, []
+
 def detectSpeaker(img): 
 	pixel_threshold = 10 
 	font = cv2.FONT_HERSHEY_SIMPLEX
@@ -68,8 +68,9 @@ def detectSpeaker(img):
 	canny_low, canny_high = setEdgeParameters(img)
 
 	# Set Up Windows: 
-	cv2.namedWindow('output_edged', cv2.WINDOW_NORMAL)
+	# cv2.namedWindow('output_edged', cv2.WINDOW_NORMAL)
 	cv2.namedWindow('output_img', cv2.WINDOW_NORMAL)
+	cv2.namedWindow('mask', cv2.WINDOW_NORMAL)
 
 	while(foundSpeaker == False): 
 		# Binary intensity sweep
@@ -100,11 +101,21 @@ def detectSpeaker(img):
 				cv2.resizeWindow('output_img', 1000, 800)
 				cv2.imshow('output_img', img)
 
+				#cropSpeaker(c, img) 
+
 				return getPosition(c)
 				break 
 				
 		if pixel_threshold < 255: 
-			pixel_threshold += 5
+			pixel_threshold += 3
 
 		if cv2.waitKey(1) & 0xFF == ord('q'): 
 			break
+
+# def cropSpeaker(contours, img): 
+# 	mask = np.ones(img.shape, dtype="uint8") * 255
+# 	cv2.drawContours(mask, [contours], -1, (0,0,255), -1) 
+# 	o_img = cv2.bitwise_and(img, img, mask = mask)
+
+# 	cv2.resizeWindow('mask', 1000, 800)
+# 	cv2.imshow('mask', o_img) 

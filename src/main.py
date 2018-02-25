@@ -3,14 +3,32 @@ import numpy as np
 import cv2 
 
 # Input Image: 
-img = cv2.imread('images/test_1.jpg', 1)
-img2 = cv2.imread('images/test_2.jpg', 1)
-img3 = cv2.imread('images/test_3.jpg', 1)
+img = cv2.imread('mapping_images/0.JPG', 1)
+img2 = cv2.imread('mapping_images/30.JPG', 1)
+img3 = cv2.imread('mapping_images/60.JPG', 1)
+img4 = cv2.imread('mapping_images/90.JPG', 1)
+img5 = cv2.imread('mapping_images/120.JPG', 1)
+img6 = cv2.imread('mapping_images/150.JPG', 1)
+img7 = cv2.imread('mapping_images/180.JPG', 1)
+img8 = cv2.imread('mapping_images/210.JPG', 1)
+img9 = cv2.imread('mapping_images/240.JPG', 1)
+img10 = cv2.imread('mapping_images/270.JPG', 1)
+img11 = cv2.imread('mapping_images/300.JPG', 1)
+img12 = cv2.imread('mapping_images/330.JPG', 1)
 
-print(tb.detectSpeaker(img)) 
-print(tb.detectSpeaker(img2)) 
-print(tb.detectSpeaker(img3)) 
 
-
+print("0: " + str(tb.detectSpeaker(img))) 
+print("30: " + str(tb.detectSpeaker(img2))) 
+print("60: " + str(tb.detectSpeaker(img3))) 
+print("90: " + str(tb.detectSpeaker(img4))) 
+print("120: " + str(tb.detectSpeaker(img5))) 
+print("150: " + str(tb.detectSpeaker(img6))) 
+print("180: " + str(tb.detectSpeaker(img7))) 
+print("210: " + str(tb.detectSpeaker(img8))) 
+print("240: " + str(tb.detectSpeaker(img9)))
+print("270: " + str(tb.detectSpeaker(img10))) 
+print("300: " + str(tb.detectSpeaker(img11)))
+#print("330: " + str(tb.detectSpeaker(img12))) 
+   
 if cv2.waitKey(0) & 0xFF == ord('q'):
 	cv2.destroyAllWindows() 
