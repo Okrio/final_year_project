@@ -3,7 +3,8 @@ Coded for use in Linux Ubuntu 16.04 terminal
 1. Run camera_script.sh using `bash -x camera_script.sh` in bash terminal 
     - Resulting images are located in /images 
 2. Run main.py 
-    - Output: Red highlighting of frame and its pixel position 
+    - Input: List of mapping images from 0 to 360 degrees with 30 degrees separation in each image 
+    - Output: Red highlighting of frame and its pixel position; A list of ground truth azimuths relative to the camera and pixel positions 
 
 ## Current Progress: (20 Feb 18)  
 ### Completed: 
