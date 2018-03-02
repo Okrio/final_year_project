@@ -5,8 +5,6 @@ echo "Image Captures Initiated: "
 cd images 
 
 gphoto2 --capture-image-and-download
-gphoto2 --capture-image-and-download
-gphoto2 --capture-image-and-download
 
 count=1 
 for file in *.JPG 
@@ -17,4 +15,4 @@ done
 
 cd .. 
 
-python main.py
+python experiment.py

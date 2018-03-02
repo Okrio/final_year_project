@@ -68,9 +68,8 @@ def detectSpeaker(img):
 	canny_low, canny_high = setEdgeParameters(img)
 
 	# Set Up Windows: 
-	# cv2.namedWindow('output_edged', cv2.WINDOW_NORMAL)
+	# cv2.namedWindow('output_edged', cv2.WINDOW_NORMAL
 	cv2.namedWindow('output_img', cv2.WINDOW_NORMAL)
-	cv2.namedWindow('mask', cv2.WINDOW_NORMAL)
 
 	while(foundSpeaker == False): 
 		# Binary intensity sweep
@@ -92,6 +91,10 @@ def detectSpeaker(img):
 											cv2.RETR_EXTERNAL, 
 											cv2.CHAIN_APPROX_SIMPLE
 											)
+
+		# Search the 5 largest contour areas only 
+		contours = sorted(contours, key = cv2.contourArea, reverse= True)[:5]
+
 		for c in contours: 
 			foundSpeaker, approx = findSpeaker(c) 
 
@@ -101,9 +104,7 @@ def detectSpeaker(img):
 				cv2.resizeWindow('output_img', 1000, 800)
 				cv2.imshow('output_img', img)
 
-				#cropSpeaker(c, img) 
-
-				return getPosition(c)
+				return getPosition(c), cv2.contourArea(c)
 				break 
 				
 		if pixel_threshold < 255: 
@@ -112,10 +113,18 @@ def detectSpeaker(img):
 		if cv2.waitKey(1) & 0xFF == ord('q'): 
 			break
 
-# def cropSpeaker(contours, img): 
-# 	mask = np.ones(img.shape, dtype="uint8") * 255
-# 	cv2.drawContours(mask, [contours], -1, (0,0,255), -1) 
-# 	o_img = cv2.bitwise_and(img, img, mask = mask)
+def getTruePosition(pixel_position):
+	x, y = pixel_position 
+	pixel_center = 2552 
 
-# 	cv2.resizeWindow('mask', 1000, 800)
-# 	cv2.imshow('mask', o_img) 
+	pixel_azimuth = x - pixel_center 
+
+	# 14.93 pixels = 1 azimuth degree 
+	if pixel_azimuth > 0: # Right half of image
+		return round(pixel_azimuth/14.93) 
+
+	elif pixel_azimuth < 0: # Left half of image
+		return round(abs(pixel_azimuth)/14.93 + 180) 
+
+	else: 
+		return 0  
