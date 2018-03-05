@@ -1,22 +1,22 @@
 ## Operating Instructions: 
 Coded for use in Linux Ubuntu 16.04 terminal 
-1. Run camera_script.sh using `bash -x camera_script.sh` in bash terminal 
+1. Run camera_script.sh using `bash camera_script_mapping.sh` in bash terminal 
     - Resulting images are located in /images 
-2. Run main.py 
-    - Input: List of mapping images from 0 to 360 degrees with 30 degrees separation in each image 
-    - Output: Red highlighting of frame and its pixel position; A list of ground truth azimuths relative to the camera and pixel positions 
+    - True Azimuth is given 
 
-## Current Progress: (20 Feb 18)  
+## Current Progress: (05 March 18)  
 ### Completed: 
 1. Basic script to trigger capture of 5 images from RICOH THETA V and automatic download to /images folder 
 2. Improved on frame detection algorithm 
     - Incremental thresholding feature that scans the images and draws out the relevant frame contours along with pixel position 
 3. Redo physical frame by improving contrast using a larger border and white structure to aid thresholding and canny edge detection
     - White frame surrounding speaker, draw thick black border lines around speaker on the white frame
+4. Map pixel values to azimuth in horizontal plane (Accurate to 5 degrees) 
 
 ### To Do: 
-1. Map pixel values to azimuth 
-2. Run dummy tests of array calibration procedure 
+1. Run dummy tests of array calibration procedure 
+2. Catch up on theoretical evaluation of interpolation 
+3. Improve detection robustness by adding condition to check last known position in y coordinates (so can detect if accidentally detect another square shape in the room) - simple tracker
 
 ### Useful References: 
 1. Description of Canny Edge Detection http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_canny/py_canny.html
