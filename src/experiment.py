@@ -8,7 +8,9 @@ pixel_position, contourArea = tb.detectSpeaker(img)
 cX, cY = pixel_position
 
 # Printout with "," to write output to next column in csv 
-print(str(cX) + "," + str(cY) + "," + str(contourArea))
+print("x: " + str(cX) + "," + "y: " + str(cY) + "," + "Area: " + str(contourArea))
+
+print("True Azimuth: " + str(tb.getTruePosition(pixel_position)))
 
 # print("x: " + str(cX))
 # print("y: " + str(cY))

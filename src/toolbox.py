@@ -45,9 +45,9 @@ def findSpeaker(c):
 		solidity = area/float(hullArea)
 
 		# Check for Flags: 
-		keepSolidity = solidity > 0.9 
+		keepSolidity = solidity > 0.8 
 		keepAspectRatio = aspect_ratio >= 0.8 and aspect_ratio <=1.2
-		keepDims = w > 10 and h > 10
+		keepDims = w > 50 and h > 50 # If cannot detect, adjust this! 
  
 		# Found Speaker: 
 		if keepAspectRatio and keepSolidity and keepDims:
@@ -68,7 +68,7 @@ def detectSpeaker(img):
 	canny_low, canny_high = setEdgeParameters(img)
 
 	# Set Up Windows: 
-	# cv2.namedWindow('output_edged', cv2.WINDOW_NORMAL
+	# cv2.namedWindow('output_edged', cv2.WINDOW_NORMAL)
 	cv2.namedWindow('output_img', cv2.WINDOW_NORMAL)
 
 	while(foundSpeaker == False): 
@@ -85,15 +85,15 @@ def detectSpeaker(img):
 		# cv2.resizeWindow('output_edged', 1000, 800)
 		# cv2.imshow('output_edged', edged)
 
+		# contours = sorted(contours, key = cv2.contourArea, reverse= True)[:5] 
+		# Cannot use this here else the outer frame will be the only one which is found 
+
 		# Finding and Drawing Contour: 
 		output, contours, hierarchy = cv2.findContours(
 											edged, 
 											cv2.RETR_EXTERNAL, 
 											cv2.CHAIN_APPROX_SIMPLE
 											)
-
-		# Search the 5 largest contour areas only 
-		contours = sorted(contours, key = cv2.contourArea, reverse= True)[:5]
 
 		for c in contours: 
 			foundSpeaker, approx = findSpeaker(c) 
@@ -105,17 +105,22 @@ def detectSpeaker(img):
 				cv2.imshow('output_img', img)
 
 				return getPosition(c), cv2.contourArea(c)
-				break 
 				
 		if pixel_threshold < 255: 
-			pixel_threshold += 3
+			pixel_threshold += 2
+
+		if pixel_threshold == 255: 
+			print('Speaker not found')
 
 		if cv2.waitKey(1) & 0xFF == ord('q'): 
 			break
 
 def getTruePosition(pixel_position):
 	x, y = pixel_position 
-	pixel_center = 2552 
+
+	# Zero this before starting measurements 
+	# Do this by taking arbitrary measured 0 point and key value in here
+	pixel_center = 2721
 
 	pixel_azimuth = x - pixel_center 
 
@@ -124,7 +129,8 @@ def getTruePosition(pixel_position):
 		return round(pixel_azimuth/14.93) 
 
 	elif pixel_azimuth < 0: # Left half of image
-		return round(abs(pixel_azimuth)/14.93 + 180) 
+		return round(pixel_azimuth/14.93) + 360
 
 	else: 
 		return 0  
+		
