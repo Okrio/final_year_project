@@ -120,17 +120,19 @@ def getTruePosition(pixel_position):
 
 	# Zero this before starting measurements 
 	# Do this by taking arbitrary measured 0 point and key value in here
-	pixel_center = 2721
+	pixel_center = 2659
 
 	pixel_azimuth = x - pixel_center 
 
 	# 14.93 pixels = 1 azimuth degree 
 	if pixel_azimuth > 0: # Right half of image
-		return round(pixel_azimuth/14.93) 
+		return round((pixel_azimuth/14.93),2) 
 
 	elif pixel_azimuth < 0: # Left half of image
-		return round(pixel_azimuth/14.93) + 360
+		return round((pixel_azimuth/14.93),2) + 360
 
 	else: 
 		return 0  
 		
+# Copy the end of the image to the other side all the time
+# https://electronics.stackexchange.com/questions/36874/would-anyone-know-how-to-use-the-intersense-navchip-sensor-with-linux

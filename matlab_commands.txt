@@ -1,0 +1,31 @@
+%-- 14/03/18  1:36:22 pm GMT --%
+addpath('m_files/')
+[in.rawResponse in.fs] = audioread('/home/bngzl/Documents/Final Year Project/20180314 pulseaudio ir measurement/20180314 pulseaudio ir measurement/az_0/reverb_sweep.wav');
+[in.rawResponse in.fs] = audioread('reverb_sweep.wav');
+[in.rawResponse in.fs] = audioread('rvrb_sweep.wav');
+in.gain_opts.gain =1
+in.signal_opts.settings = {20, 24000, 0.6, 48000
+in.signal_opts.settings = {20, 24000, 0.6, 48000}
+in.signal_opts.settings = {20, 24000, 0.6, 48000}
+ir = recover_RIR_from_recorded_sweep(in);
+figure;plot(ir)
+addpath('m_files/')
+%[in.rawResponse in.fs] = audioread('rvrb_sweep.wav');
+[in.rawResponse in.fs] = audioread('/home/bngzl/Documents/Final Year Project/20180314 pulseaudio ir measurement/20180314 pulseaudio ir measurement/withloopback/rvrb_sweep.wav');
+in.gain_opts.gain =1
+in.signal_opts.settings = {20, 24000, 0.6, 48000}
+ir = recover_RIR_from_recorded_sweep(in);
+figure;plot(ir)
+[x,fs] = audioread('/home/bngzl/Documents/Final Year Project/20180314 pulseaudio ir measurement/20180314 pulseaudio ir measurement/sweptsine_20_24000_0.6_48000.wav');
+y = [x,x];
+audiowrite(''/home/bngzl/Documents/Final Year Project/20180314 pulseaudio ir measurement/20180314 pulseaudio ir measurement/sweptsine_20_24000_0.6_48000_stereo.wav'
+audiowrite(''/home/bngzl/Documents/Final Year Project/20180314 pulseaudio ir measurement/20180314 pulseaudio ir measurement/sweptsine_20_24000_0.6_48000_stereo.wav',y,fs)
+audiowrite('/home/bngzl/Documents/Final Year Project/20180314 pulseaudio ir measurement/20180314 pulseaudio ir measurement/sweptsine_20_24000_0.6_48000_stereo.wav',y,fs)
+y = zeros(size(x,1),4);
+audiowrite('/home/bngzl/Documents/Final Year Project/20180314 pulseaudio ir measurement/20180314 pulseaudio ir measurement/sweptsine_20_24000_0.6_48000_chans1and3.wav',y,fs)
+[in.rawResponse in.fs] = audioread('/home/bngzl/Documents/Final Year Project/20180314 pulseaudio ir measurement/20180314 pulseaudio ir measurement/withloopback2/rvrb_sweep.wav');
+ir = recover_RIR_from_recorded_sweep(in);
+figure;plot(ir)
+[in.rawResponse in.fs] = audioread('/home/bngzl/Documents/Final Year Project/20180314 pulseaudio ir measurement/20180314 pulseaudio ir measurement/withloopback2/rvrb_sweep.wav');
+ir = recover_RIR_from_recorded_sweep(in);
+figure;plot(ir)

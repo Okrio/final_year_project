@@ -1,51 +1,45 @@
-import cv2
-import numpy as np; 
+import toolbox as tb
+import numpy as np
+import cv2 
 
-# NIL argument used for trackbar creation 
-def nothing(self): 
-	pass 
+# Input Image: 
+img = cv2.imread('mapping_images/0.JPG', 1)
+img2 = cv2.imread('mapping_images/30.JPG', 1)
+img3 = cv2.imread('mapping_images/60.JPG', 1)
+img4 = cv2.imread('mapping_images/90.JPG', 1)
+img5 = cv2.imread('mapping_images/120.JPG', 1)
+img6 = cv2.imread('mapping_images/150.JPG', 1)
+img7 = cv2.imread('mapping_images/180.JPG', 1)
+img8 = cv2.imread('mapping_images/210.JPG', 1)
+img9 = cv2.imread('mapping_images/240.JPG', 1)
+img10 = cv2.imread('mapping_images/270.JPG', 1)
+img11 = cv2.imread('mapping_images/300.JPG', 1)
+img12 = cv2.imread('mapping_images/330.JPG', 1)
 
-# Initialise video feed
-# Arg = 1 for alternative webcam 
-cap = cv2.VideoCapture(0) 
+print("0: " + str(tb.detectSpeaker(img)) + " Expected: " + str(tb.getTruePosition(tb.detectSpeaker(img)))) 
+print("30: " + str(tb.detectSpeaker(img2)) + " Expected: " + str(tb.getTruePosition(tb.detectSpeaker(img2)))) 
+print("60: " + str(tb.detectSpeaker(img3)) + " Expected: " + str(tb.getTruePosition(tb.detectSpeaker(img3)))) 
+print("90: " + str(tb.detectSpeaker(img4)) + " Expected: " + str(tb.getTruePosition(tb.detectSpeaker(img4)))) 
+print("120: " + str(tb.detectSpeaker(img5)) + " Expected: " + str(tb.getTruePosition(tb.detectSpeaker(img5)))) 
+print("150: " + str(tb.detectSpeaker(img6)) + " Expected: " + str(tb.getTruePosition(tb.detectSpeaker(img6)))) 
+print("180: " + str(tb.detectSpeaker(img7)) + " Expected: " + str(tb.getTruePosition(tb.detectSpeaker(img7)))) 
+#print("210: " + str(tb.detectSpeaker(img8)) + " Expected: " + str(tb.getTruePosition(tb.detectSpeaker(img8)))) 
+print("240: " + str(tb.detectSpeaker(img9)) + " Expected: " + str(tb.getTruePosition(tb.detectSpeaker(img9)))) 
+print("270: " + str(tb.detectSpeaker(img10)) + " Expected: " + str(tb.getTruePosition(tb.detectSpeaker(img10)))) 
+print("300: " + str(tb.detectSpeaker(img11)) + " Expected: " + str(tb.getTruePosition(tb.detectSpeaker(img11)))) 
+print("330: " + str(tb.detectSpeaker(img12)) + " Expected: " + str(tb.getTruePosition(tb.detectSpeaker(img12)))) 
 
-# HSV Color Sensitivity Ranges 
-hul, huh = 145, 164 # Hue 
-sal, sah = 58, 182 # Saturation
-val, vah = 165, 255 # Value
-
-HSVLOW=np.array([hul,sal,val])
-HSVHIGH=np.array([huh,sah,vah])
-
-while(True): 
-	# Capture frame by frame 
-	ret, frame = cap.read() 
-
-	# Apply blur and convert from BGR to HSV
-	frame = cv2.GaussianBlur (frame, (5,5),0)
-	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) 
-
-	# Threshold the HSV image to get desired colours
-	mask = cv2.inRange(hsv, HSVLOW, HSVHIGH)
-	ret, thresh = cv2.threshold(mask, 127, 255, 0)
-	image, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-	mask = cv2.drawContours(mask, contours, -1, (0,255,0), 3)
-	cv2.imshow('mask', mask)
-	cv2.imshow('thres', thresh)
-
-
-	# # Bitwise-AND mask the original image 
-	# res = cv2.bitwise_and(frame, frame, mask = mask)
-
-	# #Display resulting frame 
-	# cv2.imshow('frame', frame)
-	# cv2.imshow('mask', mask)
-	# cv2.imshow('res', res)
-
-
-	if cv2.waitKey(1) & 0xFF == ord('q'): 
-		break
-
-# Release capture when done 
-cap.release() 
-cv2.destroyAllWindows() 
+# print("30: " + str(tb.detectSpeaker(img2))) 
+# print("60: " + str(tb.detectSpeaker(img3))) 
+# print("90: " + str(tb.detectSpeaker(img4))) 
+# print("120: " + str(tb.detectSpeaker(img5))) 
+# print("150: " + str(tb.detectSpeaker(img6))) 
+# print("180: " + str(tb.detectSpeaker(img7))) 
+# print("210: " + str(tb.detectSpeaker(img8))) 
+# print("240: " + str(tb.detectSpeaker(img9)))
+# print("270: " + str(tb.detectSpeaker(img10))) 
+# print("300: " + str(tb.detectSpeaker(img11)))
+# print("330: " + str(tb.detectSpeaker(img12))) 
+   
+if cv2.waitKey(0) & 0xFF == ord('q'):
+	cv2.destroyAllWindows() 
