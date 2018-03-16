@@ -31,6 +31,12 @@ STIMULUS_FILE=audio/sample/sweptsine_20_24000_0.6_48000.wav
 PLAY_CHANNELMAP=front-left,front-right,rear-left,rear-right
 
 # Output Directory 
+if [ $# -lt 1 ]; then
+    OP_DIR='.'
+else 
+    OP_DIR=$1
+    mkdir -p $OP_DIR
+fi
 
 # Record Sweep Response: 
 echo "Starting Recording..."

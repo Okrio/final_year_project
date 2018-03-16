@@ -17,9 +17,7 @@ done
 
 cd .. 
 
-python experiment.py
-
-
+python experiment.py 
 # Appends python output to a csv file
 # python experiment.py >> map_experiment.csv
 # temp=$(python experiment.py) 

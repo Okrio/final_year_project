@@ -120,7 +120,7 @@ def getTruePosition(pixel_position):
 
 	# Zero this before starting measurements 
 	# Do this by taking arbitrary measured 0 point and key value in here
-	pixel_center = 2659
+	pixel_center = 2692
 
 	pixel_azimuth = x - pixel_center 
 
@@ -133,6 +133,20 @@ def getTruePosition(pixel_position):
 
 	else: 
 		return 0  
+
+def extendImage(original_img):
+	# Used to account for speaker image split across the two fish eyes lenses
+	# getTruePosition still works since speaker will not be detected in x pixels > 5376
+
+	left_extension = original_img[0:2688, 0:1000]
+	extended_image = np.concatenate((original_img, left_extension), axis=1)
+	return extended_image
+
+	# References: 
+	# http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_core/py_basic_ops/py_basic_ops.html
+	# https://stackoverflow.com/questions/7589012/combining-two-images-with-opencv
 		
-# Copy the end of the image to the other side all the time
+
+
+
 # https://electronics.stackexchange.com/questions/36874/would-anyone-know-how-to-use-the-intersense-navchip-sensor-with-linux
