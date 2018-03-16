@@ -116,11 +116,13 @@ def detectSpeaker(img):
 			break
 
 def getTruePosition(pixel_position):
+	# RICOH Theta Resolution: 5376x2688 pixels 
+
 	x, y = pixel_position 
 
 	# Zero this before starting measurements 
 	# Do this by taking arbitrary measured 0 point and key value in here
-	pixel_center = 2692
+	pixel_center = 2688
 
 	pixel_azimuth = x - pixel_center 
 
