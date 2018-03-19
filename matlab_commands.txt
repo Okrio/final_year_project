@@ -26,6 +26,10 @@ audiowrite('/home/bngzl/Documents/Final Year Project/20180314 pulseaudio ir meas
 [in.rawResponse in.fs] = audioread('/home/bngzl/Documents/Final Year Project/20180314 pulseaudio ir measurement/20180314 pulseaudio ir measurement/withloopback2/rvrb_sweep.wav');
 ir = recover_RIR_from_recorded_sweep(in);
 figure;plot(ir)
+
+
+
+
 [in.rawResponse in.fs] = audioread('/home/bngzl/Documents/Final Year Project/20180314 pulseaudio ir measurement/20180314 pulseaudio ir measurement/withloopback2/rvrb_sweep.wav');
 ir = recover_RIR_from_recorded_sweep(in);
 figure;plot(ir)
