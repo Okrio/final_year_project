@@ -4,7 +4,7 @@ Coded for use in Linux Ubuntu 16.04 terminal
     - Resulting images are located in /images 
     - True Azimuth is given 
 
-## Current Progress: (05 March 18)  
+## Current Progress: (20 March 18)  
 ### Completed: 
 1. Basic script to trigger capture of 5 images from RICOH THETA V and automatic download to /images folder 
 2. Improved on frame detection algorithm 
