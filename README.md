@@ -17,14 +17,14 @@ Coded for use in Linux Ubuntu 16.04 terminal
 7. Duplicate pixels from one end of image to the other so that system can detect all 360 degrees without the square being halved in between sides (Implemented in extendImage function in toolbox) 
 8. Ran tests of array calibration procedure 
 9. Integrated array calibration with optical system 
+10. Trimed and Aligned Impulse response measurements 
+11. Did a first trial interpolation of measurements in Clear Lab
 
 ### To Do: 
 1. Catch up on theoretical evaluation of interpolation 
 2. Improve detection robustness by adding condition to check last known position in y coordinates (so can detect if accidentally detect another square shape in the room) - simple tracker
 3. Verify accuracy of optical system with azimuth tracker
 4. Out of horizontal plane measurements 
-5. Trimming of impulse response measurements 
-6. Interpolation of impulse response measurements 
 
 ### Useful References: 
 1. Description of Canny Edge Detection http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_canny/py_canny.html
