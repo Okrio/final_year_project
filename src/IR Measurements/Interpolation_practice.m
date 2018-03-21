@@ -1,26 +1,17 @@
 % example of interpolation using the Spherical Harmonic (SH) domain using
 % impulse responses for microphones mounted on the surface of an ideal
 % sphere
-restoredefaultpath
-addpath(genpath('dependencies'))
 
-fs = 48000;
+addpath(genpath('Interpolation of Circular Data'));
+load('ir_standardised.mat');
 
-
-% Could do it for microphones in free space, but their responses aren't very interesting!
-% nSensors = 4;
-% sensorSpacing = 0.025;
-% ema = FreeField_20180202_01_ULA_configurable(nSensors,sensorSpacing);
-
-% Do it for a rigid sphere with radius 4.2 cm, rotated so that sensor 2 is
-% on the horizontal plane and aligned with the x axis
-% Generates an acoustic model of the rigid sphere 
-ema = RigidSphere_20171114_01_ideal_em32(); 
-ema.setPoseRollPitchYawDegrees(0,0,-32);
-ema.prepareData(fs); 
+ir_measure = ir_standardised(:,:,1:2:end); 
+ir_interp_gt = ir_standardised(:,:,2:2:end); 
 
 measure_grid_az_deg = (0:10:350).'; % Spacing between each measurement 
 interp_grid_az_deg = (5:10:355).';% Spacing between interpolated result 
+
+fs = 48000;
 
 % dimension of SH representation
 maxShOrd = 18;
@@ -36,6 +27,7 @@ end
 nAzMeasure = length(measure_grid_az_deg);
 nAzInterp = length(interp_grid_az_deg);
 
+% Inclination of Measurements: 
 measure_grid_inc_deg = 90*ones(size(measure_grid_az_deg));
 interp_grid_inc_deg = 90*ones(size(interp_grid_az_deg));
 
@@ -50,14 +42,7 @@ Yinterp = sphBasis(deg2rad(interp_grid_az_deg),...
                     maxShOrd); %[nAzInterp nSH]
                 
 Yinterp = Yinterp(:,idc_circ);%[nAzInterp nShCirc]
-
-% This is where I should include my impulse response matrix 
-ir_measure = ema.getImpulseResponseForSrc(deg2rad(measure_grid_az_deg),...
-                                          deg2rad(measure_grid_inc_deg));
-                                      
-ir_interp_gt = ema.getImpulseResponseForSrc(deg2rad(interp_grid_az_deg),...
-                                          deg2rad(interp_grid_inc_deg));
-                                    
+                                 
 nSamples = size(ir_measure,1);
 nFFT = nSamples;
 tf_measure = rfft(ir_measure,nFFT,1); %[nFreq nSensors, nAzMeasure]
@@ -107,7 +92,8 @@ lh = get(gca,'children');
 set(lh,'visible','off')
 set(gcf,'windowstyle','docked')
 
-%% plot the ground interpolated impulse responses and the interpolated versions
+%% Comparing Interpolated with Measured Results at Interpolated Positions 
+
 % based on the measured impulse responses
 figure;
 plot(squeeze(ir_interp_gt(:,irefchan,:)))

@@ -11,3 +11,5 @@ in.signal_opts.settings = {20, 24000, 0.6, 48000}
 in.gain_opts.gain =1
 ir = recover_RIR_from_recorded_sweep(in); 
 figure; plot(ir) 
+
+% figure;plot(20*log10(abs(ir))) to see the diagram more clearly 
