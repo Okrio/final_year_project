@@ -19,14 +19,23 @@ Coded for use in Linux Ubuntu 16.04 terminal
 9. Integrated array calibration with optical system 
 10. Trimed and Aligned Impulse response measurements 
 11. Did a first trial interpolation of measurements in Clear Lab
+12. Added a 'Cube Map' warp function inside toolbox.py to unwrap equirectangular image to cube map efficiently https://pastebin.com/Eeki92Zv
+13. Found that Cube Mapping has difficulty detecting speaker at top left, right and bottom left, right of sphere due to splitting of image
+14. Used perspective shift to successful detect speaker at out of horizontal plane measurements https://github.com/fuenwang/Equirec2Perspec, getting around 13. 
 
 ### To Do: 
 1. Catch up on theoretical evaluation of interpolation 
 2. Improve detection robustness by adding condition to check last known position in y coordinates (so can detect if accidentally detect another square shape in the room) - simple tracker
-3. Verify accuracy of optical system with azimuth tracker
-4. Out of horizontal plane measurements 
+3. Verify accuracy of optical system with azimuth tracker (Plot error) 
+4. Write different scripts and use different detection parameters for horizontal and out of horizontal detection. i.e If speaker is roughly in horizontal plane, use basic algorithm in equirect format, else if in top half of plane, use perspective shift and scan top half, else if bottom half of plane, use perspective shift and scan bottom half - This will improve effectiveness and efficient of the detection and mapping 
+5. Out of horizontal plane mapping
+6. Conduct proper horizontal plane calibration measurements in large room 
 
 ### Useful References: 
 1. Description of Canny Edge Detection http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_canny/py_canny.html
 2. Description of Thresholding https://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/threshold.html#basic-threshold
 3. Canny Edge parameters selection https://stackoverflow.com/questions/21324950/how-to-select-the-best-set-of-parameters-in-canny-edge-detection-algorithm-imple
+
+#### Image Warping: 
+1. https://stackoverflow.com/questions/29678510/convert-21-equirectangular-panorama-to-cube-map  
+2. https://github.com/fuenwang/Equirec2Perspec
