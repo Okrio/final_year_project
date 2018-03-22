@@ -4,7 +4,7 @@ Coded for use in Linux Ubuntu 16.04 terminal
     - Resulting images are located in /images 
     - True Azimuth is given 
 
-## Current Progress: (20 March 18)  
+## Current Progress: (23 March 18)  
 ### Completed: 
 1. Basic script to trigger capture of 5 images from RICOH THETA V and automatic download to /images folder 
 2. Improved on frame detection algorithm 
@@ -33,6 +33,8 @@ Coded for use in Linux Ubuntu 16.04 terminal
 6. Plot interpolation results for different intervals (i.e 30 degrees instead of 10) - show how varying the number of measurements taken will change the outcome - i.e taking more measurements at smaller intervals is better, since this is the objective of the project: to take high resolution positions 
 7. Plot 3D graph of a single channel: y axis is response, x axis is sample, with each line a different direction (check iphone image) 
 8. Plot error rate of optical measure vs the InertiaCube4 method 
+9. Read Dr Moore's paper on evaluating interpolation - find metrics to use to evaluate 
+10. Use results to do direction of arrival estimation (Dr Moore's youtube video) - request for the paper he was talking about
 
 ### Useful References: 
 1. Description of Canny Edge Detection http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_canny/py_canny.html
