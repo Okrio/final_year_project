@@ -139,7 +139,7 @@ def getTruePosition(pixel_position):
 	# Zero this before starting measurements 
 	# Do this by taking arbitrary measured 0 point and key value in here
 	pixel_center_x = 2688
-	pixel_center_y = 1319
+	pixel_center_y = 1344
 
 	pixel_azimuth = x - pixel_center_x 
 	pixel_inclination = y - pixel_center_y
@@ -154,15 +154,16 @@ def getTruePosition(pixel_position):
 	else: 
 		true_azimuth = 0  
 
-	# 14.93 pixels = 1 inclination degree 
-	if pixel_inclination < 0: #Top half of image 
-		true_inclination = round(abs((pixel_inclination/14.93)),2)
-	elif pixel_inclination > 0: 
-		true_inclination = round((pixel_inclination/14.93),2)
-	else:
-		true_inclination = 0
+	return true_azimuth
+	# # 14.93 pixels = 1 inclination degree 
+	# if pixel_inclination < 0: #Top half of image 
+	# 	true_inclination = round(abs((pixel_inclination/14.93)),2)
+	# elif pixel_inclination > 0: 
+	# 	true_inclination = round((pixel_inclination/14.93),2)
+	# else:
+	# 	true_inclination = 0
 
-	return true_azimuth, true_inclination
+	# return true_azimuth, true_inclination
 
 def extendImage(original_img):
 	# Used to account for speaker image split across the two fish eyes lenses

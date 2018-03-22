@@ -16,7 +16,7 @@ cX, cY = pixel_position
 # print("x: " + str(cX) + "," + "y: " + str(cY) + "," + "Area: " + str(contourArea))
 
 #print("True Azimuth: " + str(tb.getTruePosition(pixel_position)))
-print(cX, cY)
+#print(cX, cY)
 print(tb.getTruePosition(pixel_position))
 
 if cv2.waitKey(0) & 0xFF == ord('q'):

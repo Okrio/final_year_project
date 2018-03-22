@@ -16,17 +16,23 @@ do
 
 	gphoto2 --capture-image-and-download
 
-	count=1
 	for file in *.JPG 
 	do 
-		mv ${file} test_${count}.jpg 
-		((count++))
+		mv ${file} raw_image.jpg 
 	done 
 
 	cd .. 
 
 	### Measure Azimuth 
-	python main.py >> audio/azimuth.csv
+	python main.py >> audio/azimuth_909b.csv
+
+	cd images 
+
+
+	mv raw_image.jpg 909b_images_results/raw_image${azimuth}.jpg
+	 
+
+	cd .. 
 
 	echo " "
 
