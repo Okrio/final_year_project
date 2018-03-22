@@ -22,6 +22,7 @@ Coded for use in Linux Ubuntu 16.04 terminal
 12. Added a 'Cube Map' warp function inside toolbox.py to unwrap equirectangular image to cube map efficiently https://pastebin.com/Eeki92Zv
 13. Found that Cube Mapping has difficulty detecting speaker at top left, right and bottom left, right of sphere due to splitting of image
 14. Used perspective shift to successful detect speaker at out of horizontal plane measurements https://github.com/fuenwang/Equirec2Perspec, getting around 13. 
+15. Conduct proper horizontal plane calibration measurements in large room and Interpolate 
 
 ### To Do: 
 1. Catch up on theoretical evaluation of interpolation 
@@ -29,7 +30,9 @@ Coded for use in Linux Ubuntu 16.04 terminal
 3. Verify accuracy of optical system with azimuth tracker (Plot error) 
 4. Write different scripts and use different detection parameters for horizontal and out of horizontal detection. i.e If speaker is roughly in horizontal plane, use basic algorithm in equirect format, else if in top half of plane, use perspective shift and scan top half, else if bottom half of plane, use perspective shift and scan bottom half - This will improve effectiveness and efficient of the detection and mapping 
 5. Out of horizontal plane mapping
-6. Conduct proper horizontal plane calibration measurements in large room 
+6. Plot interpolation results for different intervals (i.e 30 degrees instead of 10) - show how varying the number of measurements taken will change the outcome - i.e taking more measurements at smaller intervals is better, since this is the objective of the project: to take high resolution positions 
+7. Plot 3D graph of a single channel: y axis is response, x axis is sample, with each line a different direction (check iphone image) 
+8. Plot error rate of optical measure vs the InertiaCube4 method 
 
 ### Useful References: 
 1. Description of Canny Edge Detection http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_canny/py_canny.html
