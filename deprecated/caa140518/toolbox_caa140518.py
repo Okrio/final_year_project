@@ -1,26 +1,18 @@
-######################################### Toolbox ######################################## 
+############### Toolbox ############## 
 import numpy as np
 import cv2 
 
-# For remap function
+# For remap
 from numpy import pi
 from PIL import Image
 import sys
 
-# For perspective shift function: 
+# For perspective shift: 
 import os
 
-################ Global Variables ################
-font = cv2.FONT_HERSHEY_SIMPLEX
-
-################ Functions ################
-
-######## Horizontal Plane Speaker Detection ########
 def setEdgeParameters(img):
-	# Description: Adaptive thresholds for Canny Edge Detection
-	# Input: Image 
-	# Output: Upper and Lower thresholds for Canny Edge Detection 
-
+	# Input: Image frame 
+	# Output: Adaptive thresholds for Canny Edge Detection 
 	sigma = 0.33 
 	v = np.median(img) 
 	lower_threshold = int(max(0, (1.0 - sigma) * v))
@@ -29,10 +21,8 @@ def setEdgeParameters(img):
 	return lower_threshold, upper_threshold 
 
 def getPosition(contour):
-	# Description: Obtains the x and y pixel of center of contour 
 	# Input: Contour
-	# Output: Pixel position of contour's center 
-
+	# Output: Pixel position of contour center
 	M = cv2.moments(contour) 
 	if M['m00']!=0: 
 		cX = int(M['m10']/M['m00'])
@@ -42,75 +32,34 @@ def getPosition(contour):
 	return cX, cY 
 
 def displayText(img, contour, pixel_threshold):
-	# Description: Displays speaker's pixel position on screen 
-	# Input: Image, contour, current_pixel_threshold 
-	
+	# Input: Image frame, contour, current_pixel_threshold 
+	font = cv2.FONT_HERSHEY_SIMPLEX 
 	cX, cY = getPosition(contour) 
 	position_text = "Speaker Position: " + str(getPosition(contour))
 	cv2.putText(img, position_text, (cX, cY - 15), font, 0.5, (0,0,255), 2)
 	cv2.putText(img, "x", (cX, cY), font, 0.5, (0, 255, 0), 1) 
 	cv2.putText(img, str(pixel_threshold), (cX, cY - 30), font, 0.5, (0,0,255), 2)
 
-def getTruePosition(pixel_position):
-	# Description: Translates xy pixel positions into real world azimuths 
-	# Input: pixel_position (1x2 array)
-	# Output: real world azimuth (float)
-
-	# RICOH Theta Resolution: 5376x2688 pixels 
-
-	x, y = pixel_position 
-
-	pixel_center_x = 2688
-	pixel_center_y = 1344
-
-	pixel_azimuth = x - pixel_center_x 
-
-	# 14.93 pixels = 1 azimuth degree 
-	if pixel_azimuth > 0: # Right half of image
-		azimuth = round((pixel_azimuth/14.93),2) 
-
-	elif pixel_azimuth < 0: # Left half of image
-		azimuth = round((pixel_azimuth/14.93),2) + 360
-
-	else: 
-		azimuth = 0  
-
-	return azimuth
-
-def extendImage(img):
-	# Description: Used to account for speaker image split across the two ends of screen 
-	# 			   getTruePosition still works since speaker will not be detected in x pixels > 5376
-	# Input: Image
-	# Output: Horizontally extended image 
-	
-	left_extension = img[0:2688, 0:1000]
-	extended_img = np.concatenate((img, left_extension), axis=1)
-	return extended_img
-
-	# References: 
-	# http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_core/py_basic_ops/py_basic_ops.html
-	# https://stackoverflow.com/questions/7589012/combining-two-images-with-opencv
-
-def findSpeaker(contour): 
-	# Description: Algorithm to find distinguish speaker contour 
-	# Input: Contour
-	# Output: foundSpeaker flag and contour 
-
-	perimeter = cv2.arcLength(contour, True)
+def findSpeaker(c): 
+	perimeter = cv2.arcLength(c, True)
 	epsilon = 0.01*perimeter 
-	approx = cv2.approxPolyDP(contour, epsilon, True)
+	approx = cv2.approxPolyDP(c, epsilon, True)
 
 	if len(approx) == 4: 
 		(x,y,w,h) = cv2.boundingRect(approx) 
 		aspect_ratio = w/float(h) 
-		area = cv2.contourArea(contour)
-		hullArea = cv2.contourArea(cv2.convexHull(contour))
+		area = cv2.contourArea(c)
+		hullArea = cv2.contourArea(cv2.convexHull(c))
 		solidity = area/float(hullArea)
 
 		# Check for Flags: 
 		keepSolidity = solidity > 0.9
-		keepAspectRatio = aspect_ratio >= 0.8 and aspect_ratio <= 1.2
-		keepDims = w > 50 and h > 50
+		keepAspectRatio = aspect_ratio >= 0.8 and aspect_ratio <= 1.2 # To account for warping outside horizontal plane
+		keepDims = w > 50 and h > 50 # If cannot detect, adjust this! 
+
+		# keepSolidity = solidity > 0.8 
+		# keepAspectRatio = aspect_ratio >= 0.8 and aspect_ratio <=1.2
+		# keepDims = w > 50 and h > 50 # If cannot detect, adjust this! 
  
 		# Found Speaker: 
 		if keepAspectRatio and keepSolidity and keepDims:
@@ -120,142 +69,116 @@ def findSpeaker(contour):
 	else: 
 		return False, []
 
-def filterColour(img): 
-	# Description: Applies a colour mask to filter out similar objects in image 
-	# Input: Image 
-	# Output: Mask 
-
-	# Filter Values: 
-	low_blue = 0
-	low_green = 0
-	low_red = 0
-	high_blue = 255 # 135
-	high_green = 200 # 146
-	high_red = 117 # 26
-
-	BGRLOW=np.array([low_blue,low_green,low_red])
-	BGRHIGH=np.array([high_blue,high_green,high_red])
-
-	#img = cv2.GaussianBlur (img, (5,5),0) # Blur image before masking 
-	mask = cv2.inRange(img, BGRLOW, BGRHIGH) # Threshold the RGB image to get desired colours
-
-	output_img = cv2.bitwise_and(img, img, mask = mask) # Bitwise-AND mask the original image 
-
-	return output_img
-
-def detectSpeaker(img, troubleshoot_flag): 
-	# Description: Does a binary intensity sweep to detect and outline speaker in the image; 
-	#			   Troubleshoot flag used to trigger canny edge and removes loop break after finding speaker
-	# Input: Image, Troubleshoot Flag (True or False)
-	# Output: Pixel position (1x2 array), Contour Area
-
-	# Initialisation: 
-	cv2.namedWindow('output_img', cv2.WINDOW_NORMAL)
-	cv2.resizeWindow('output_img', 1000, 800)
-
-	if (troubleshoot_flag == True):
-		cv2.namedWindow('output_edged', cv2.WINDOW_NORMAL) # Canny Edge Window Initialisation
-		cv2.resizeWindow('output_edged', 1000, 800)
-		cv2.namedWindow('filtered', cv2.WINDOW_NORMAL) # Colour Filter Window Initialisation
-		cv2.resizeWindow('filtered', 1000, 800)
-
+def detectSpeaker(img): 
 	pixel_threshold = 10 
+	font = cv2.FONT_HERSHEY_SIMPLEX
 	foundSpeaker = False 
-	canny_low, canny_high = setEdgeParameters(img)
 
-	# Image Pre-processing: 
 	gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 	blurred = cv2.GaussianBlur(gray_img, (5,5), 0)
 
-	# Speaker Detection Loop: 
-	# Troubleshooting Routine
-	if (troubleshoot_flag == True): 
-		while(pixel_threshold != 255):
-			# Binary intensity sweep
-			ret, th1 = cv2.threshold(blurred, pixel_threshold, 255, cv2.THRESH_BINARY_INV)
+	canny_low, canny_high = setEdgeParameters(img)
 
-			# Canny Edge Detection post-binary sweep
-			edged = cv2.Canny(th1, canny_low, canny_high)
-			edged = cv2.dilate(edged, None, iterations = 1)
-			edged = cv2.erode(edged, None, iterations = 1)
+	# Set Up Windows: 
+	cv2.namedWindow('output_edged', cv2.WINDOW_NORMAL)
+	cv2.namedWindow('output_img', cv2.WINDOW_NORMAL)
 
-			# Display Canny Edge Changes 
-			cv2.imshow('output_edged', edged)
+	while(foundSpeaker == False): 
+		# Binary intensity sweep
+		ret, th1 = cv2.threshold(blurred, pixel_threshold, 255,
+			cv2.THRESH_BINARY_INV)
+		
+		# Canny Edge Detection post-binary sweep
+		edged = cv2.Canny(th1, canny_low, canny_high)
+		edged = cv2.dilate(edged, None, iterations = 1)
+		edged = cv2.erode(edged, None, iterations = 1)
 
-			# Display filtered image
-			cv2.imshow('filtered', img)
+		# Display Canny Edge Changes 
+		cv2.resizeWindow('output_edged', 1000, 800)
+		cv2.imshow('output_edged', edged)
 
-			# Find Contours: 
-			output, contours, hierarchy = cv2.findContours(
-												edged, 
-												cv2.RETR_EXTERNAL, 
-												cv2.CHAIN_APPROX_SIMPLE
-												)
-			# https://docs.opencv.org/3.4.0/d9/d8b/tutorial_py_contours_hierarchy.html
+		# contours = sorted(contours, key = cv2.contourArea, reverse= True)[:5] 
+		# Cannot use this here else the outer frame will be the only one which is found 
 
-			# Loop through all contours to find possible contours of speaker
-			for c in contours: 
-				foundSpeaker, approx = findSpeaker(c) 
+		# Finding and Drawing Contour: 
+		output, contours, hierarchy = cv2.findContours(
+											edged, 
+											cv2.RETR_EXTERNAL, 
+											cv2.CHAIN_APPROX_SIMPLE
+											)
+		# https://docs.opencv.org/3.4.0/d9/d8b/tutorial_py_contours_hierarchy.html
 
-				if foundSpeaker: 
-					cv2.drawContours(img, approx, -1, (0,0,255), 2)
-					displayText(img, c, pixel_threshold)
-					cv2.imshow('output_img', img)
-					if 0xFF == ord('q'):
-						break
+		for c in contours: 
+			foundSpeaker, approx = findSpeaker(c) 
 
-			if pixel_threshold < 255: 
-				pixel_threshold += 1
+			if foundSpeaker: 
+				cv2.drawContours(img, approx, -1, (0,0,255), 2)
+				displayText(img, c, pixel_threshold)
+				cv2.resizeWindow('output_img', 1000, 800)
+				cv2.imshow('output_img', img)
 
-			if cv2.waitKey(1) & 0xFF == ord('q'): 
-				break
+				return getPosition(c), cv2.contourArea(c)
+				
+		if pixel_threshold < 255: 
+			pixel_threshold += 1
 
-	# Normal Routine
-	elif (troubleshoot_flag == False): # Loop Breaks once Speaker is found
-		while(foundSpeaker == False): 
-			# Binary intensity sweep
-			ret, th1 = cv2.threshold(blurred, pixel_threshold, 255, cv2.THRESH_BINARY_INV)
-			
-			# Canny Edge Detection post-binary sweep
-			edged = cv2.Canny(th1, canny_low, canny_high)
-			edged = cv2.dilate(edged, None, iterations = 1)
-			edged = cv2.erode(edged, None, iterations = 1)
+		if pixel_threshold == 255: 
+			print('Speaker not found')
+			break
+			# return [], []
 
-			# Finding and Drawing Contour: 
-			output, contours, hierarchy = cv2.findContours(
-												edged, 
-												cv2.RETR_EXTERNAL, 
-												cv2.CHAIN_APPROX_SIMPLE
-												)
-			# https://docs.opencv.org/3.4.0/d9/d8b/tutorial_py_contours_hierarchy.html
+		if cv2.waitKey(1) & 0xFF == ord('q'): 
+			break
+			# return [], []
 
-			for c in contours: 
-				foundSpeaker, approx = findSpeaker(c) 
+def getTruePosition(pixel_position):
+	# RICOH Theta Resolution: 5376x2688 pixels 
 
-				if foundSpeaker: 
-					cv2.drawContours(img, approx, -1, (0,0,255), 2)
-					displayText(img, c, pixel_threshold)
-					cv2.imshow('output_img', img)
+	x, y = pixel_position 
 
-					return getPosition(c), cv2.contourArea(c)
-					
-			if pixel_threshold < 255: 
-				pixel_threshold += 1
+	# Zero this before starting measurements 
+	# Do this by taking arbitrary measured 0 point and key value in here
+	pixel_center_x = 2688
+	pixel_center_y = 1344
 
-			if pixel_threshold == 255: 
-				print('Speaker not found')
-				break
+	pixel_azimuth = x - pixel_center_x 
+	pixel_inclination = y - pixel_center_y
 
-			if cv2.waitKey(1) & 0xFF == ord('q'): 
-				break
+	# 14.93 pixels = 1 azimuth degree 
+	if pixel_azimuth > 0: # Right half of image
+		true_azimuth = round((pixel_azimuth/14.93),2) 
 
-######## Image Warping (For 360 Detection) ########
+	elif pixel_azimuth < 0: # Left half of image
+		true_azimuth = round((pixel_azimuth/14.93),2) + 360
 
-### For Cube Map: 
+	else: 
+		true_azimuth = 0  
+
+	return true_azimuth
+	# # 14.93 pixels = 1 inclination degree 
+	# if pixel_inclination < 0: #Top half of image 
+	# 	true_inclination = round(abs((pixel_inclination/14.93)),2)
+	# elif pixel_inclination > 0: 
+	# 	true_inclination = round((pixel_inclination/14.93),2)
+	# else:
+	# 	true_inclination = 0
+
+	# return true_azimuth, true_inclination
+
+def extendImage(original_img):
+	# Used to account for speaker image split across the two fish eyes lenses
+	# getTruePosition still works since speaker will not be detected in x pixels > 5376
+
+	left_extension = original_img[0:2688, 0:1000]
+	extended_image = np.concatenate((original_img, left_extension), axis=1)
+	return extended_image
+
+	# References: 
+	# http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_core/py_basic_ops/py_basic_ops.html
+	# https://stackoverflow.com/questions/7589012/combining-two-images-with-opencv
+
 def genMapData(image_width): 
-	# Description: Generates the coordinates to remap equirectangular image into a cube map (Feeder for remapImage function)
-	# Input: Image width
-	# Output: Cube map coordinates
+	# Generates the coordinates to remap image 
 
 	in_size = [image_width, image_width * 3 / 4]
 	edge = in_size[0]/4 # The length of each edge in pixels
@@ -335,29 +258,24 @@ def genMapData(image_width):
 	map_y_32 = out_pix[:, :, 0]
 	return map_x_32, map_y_32
 
-def remapImage(img): 
+def remapImage(original_img): 
 	# Generates a cube map image from an equirectangular image 
-	# Input: Image 
-	# Output: Cubemap Image.jpg
 
-	imgIn = Image.open(img)
+	imgIn = Image.open(original_img)
 	inSize = imgIn.size 
 
 	map_x_32, map_y_32 = genMapData(inSize[0])
 	cubemap = cv2.remap(np.array(imgIn), map_x_32, map_y_32, cv2.INTER_LINEAR)
 
 	imgOut = Image.fromarray(cubemap)
-	imgOut.save("images/process/cube_map.jpg")
+	imgOut.save("images/cube_map.jpg")
 
 	# References: 
-	# https://pastebin.com/Eeki92Zv (key source)
-	# https://stackoverflow.com/questions/29678510/convert-21-equirectangular-panorama-to-cube-map (explanation)
+	# https://pastebin.com/Eeki92Zv
+	# https://stackoverflow.com/questions/29678510/convert-21-equirectangular-panorama-to-cube-map  
 	# https://github.com/bingsyslab/360projection
 
 ### For Perspective Shifts: 
-# https://github.com/fuenwang/Equirec2Perspec
-# http://paulbourke.net/miscellaneous/sphere2persp/
-
 class Equirectangular:
     def __init__(self, img_name):
         self._img = cv2.imread(img_name, cv2.IMREAD_COLOR)
@@ -488,6 +406,11 @@ def scanImage(equ):
 				# 	pass 
 			else: 
 				pass 
+
+
+
+
+
 
 # Unwarping: 
 # https://hackaday.io/project/12384-autofan-automated-control-of-air-flow/log/41862-correcting-for-lens-distortions
