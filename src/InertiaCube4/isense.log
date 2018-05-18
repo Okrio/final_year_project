@@ -1,76 +1,76 @@
-[00000.592] InterSense Library ver. 4.2401 64-bit
-[00000.593] Copyright 1998-2014 InterSense
-[00000.593] http://www.intersense.com
-[00000.593] Tel: +1 781-541-6330
-[00000.593] Pre-parsing config file: /home/bngzl/Documents/Final Year Project/final_year_project/src/InertiaCube4/isense1.ini
-[00000.604] Finished.
-[00000.604]
-[00000.604] ####################################################
-[00000.604] # Looking for InterSense tracking device number 1  #
-[00000.604] ####################################################
-[00000.604]
-[00000.604] Thu Mar 22 07:52:02 2018
-[00000.605]
-[00000.605] >>> HID protocol detection <<<
-[00000.605]
-[00000.605] >>> Serial/TCP protocol detection <<<
-[00000.634]
-[00000.634] File isports.ini is present and will be used.
-[00000.634] isports.ini: /dev/ttyUSB0 (PORT:1 TYPE:1 BAUD:0)
-[00000.634] Looking for IS-X00 device on port 1 (0.63)
-[00000.635] Opening port: /dev/ttyUSB0 (S:1 N:0 DP:1 DT:1 RT:0)
-[00000.636] Successfully opened /dev/ttyUSB0
-[00000.763]
-[00000.763] >>> SDP protocol detection <<<
-[00000.763]
-[00000.763] Looking for SDP devices (0.76)
-[00000.763] Located isports.ini file at /home/bngzl/Documents/Final Year Project/final_year_project/src/InertiaCube4
-[00000.770] DEVWRN: Device config file not found: isradio.ini
-[00000.771] Opening port: /dev/ttyUSB0 (S:1 N:0 DP:1 DT:1 RT:0)
-[00000.772] Successfully opened /dev/ttyUSB0
+[00000.242] InterSense Library ver. 4.2401 64-bit
+[00000.242] Copyright 1998-2014 InterSense
+[00000.242] http://www.intersense.com
+[00000.242] Tel: +1 781-541-6330
+[00000.242] Pre-parsing config file: /home/bngzl/Documents/Final Year Project/final_year_project/src/InertiaCube4/isense1.ini
+[00000.256] Finished.
+[00000.256]
+[00000.256] ####################################################
+[00000.256] # Looking for InterSense tracking device number 1  #
+[00000.256] ####################################################
+[00000.256]
+[00000.256] Fri May 18 14:29:09 2018
+[00000.256]
+[00000.256] >>> HID protocol detection <<<
+[00000.256]
+[00000.256] >>> Serial/TCP protocol detection <<<
+[00000.264]
+[00000.264] File isports.ini is present and will be used.
+[00000.264] isports.ini: /dev/ttyUSB0 (PORT:1 TYPE:1 BAUD:0)
+[00000.264] Looking for IS-X00 device on port 1 (0.26)
+[00000.265] Opening port: /dev/ttyUSB0 (S:1 N:0 DP:1 DT:1 RT:0)
+[00000.266] Successfully opened /dev/ttyUSB0
+[00000.392]
+[00000.392] >>> SDP protocol detection <<<
+[00000.392]
+[00000.392] Looking for SDP devices (0.39)
+[00000.393] Located isports.ini file at /home/bngzl/Documents/Final Year Project/final_year_project/src/InertiaCube4
+[00000.404] DEVWRN: Device config file not found: isradio.ini
+[00000.405] Opening port: /dev/ttyUSB0 (S:1 N:0 DP:1 DT:1 RT:0)
+[00000.406] Successfully opened /dev/ttyUSB0
 [00001.347] Tracker model: InertiaCube/InterTrax
 [00001.347] Configuring the system
-[00001.479]
-[00001.479] InertiaCube4 device detected
-[00001.479]
-[00001.479] Finished SDP detection (1.48)
-[00001.479] Configuring from isense1.cfg
-[00001.525] Finished configuring from file
-[00001.526] Writing configuration file isense1.cfg
-[00001.526] Finished writing to file
-[00001.526] Configuring from /home/bngzl/Documents/Final Year Project/final_year_project/src/InertiaCube4/isense1.ini
-[00001.526] Finished configuring from file
-[00001.526]
-[00001.526] ####################################################
-[00001.526] # Looking for InterSense tracking device number 2  #
-[00001.527] ####################################################
-[00001.527]
-[00001.527] Thu Mar 22 07:52:03 2018
-[00001.527]
-[00001.527] >>> HID protocol detection <<<
-[00001.527]
-[00001.527] >>> Serial/TCP protocol detection <<<
-[00001.527]
-[00001.527] File isports.ini is present and will be used.
-[00001.527] isports.ini: /dev/ttyUSB0 (PORT:1 TYPE:1 BAUD:0)
-[00001.527] Looking for IS-X00 device on port 1 (1.53)
-[00001.527] Port 1 already in use
-[00001.528]
-[00001.528] >>> SDP protocol detection <<<
-[00001.528]
-[00001.528] Looking for SDP devices (1.53)
-[00001.528] Located isports.ini file at /home/bngzl/Documents/Final Year Project/final_year_project/src/InertiaCube4
-[00001.528]
-[00001.528] No SDP Deviced found (1.53)
-[00001.528]
-[00001.528] >>> UDP protocol detection <<<
-[00001.528]
-[00001.528] Looking for UDP Broadcasts
-[00001.728]   Checking UDP port 5001... NOT FOUND
-[00001.928]   Checking UDP port 5002... NOT FOUND
-[00002.128]   Checking UDP port 5003... NOT FOUND
-[00002.329]   Checking UDP port 5004... NOT FOUND
-[00002.529]   Checking UDP port 5005... NOT FOUND
-[00002.529]
-[00002.529] InterSense tracker not present
-[00002.529] Finished (2.53)
+[00001.470]
+[00001.470] InertiaCube4 device detected
+[00001.470]
+[00001.470] Finished SDP detection (1.47)
+[00001.470] Configuring from isense1.cfg
+[00001.516] Finished configuring from file
+[00001.516] Writing configuration file isense1.cfg
+[00001.516] Finished writing to file
+[00001.516] Configuring from /home/bngzl/Documents/Final Year Project/final_year_project/src/InertiaCube4/isense1.ini
+[00001.517] Finished configuring from file
+[00001.517]
+[00001.517] ####################################################
+[00001.517] # Looking for InterSense tracking device number 2  #
+[00001.517] ####################################################
+[00001.517]
+[00001.517] Fri May 18 14:29:10 2018
+[00001.517]
+[00001.517] >>> HID protocol detection <<<
+[00001.517]
+[00001.517] >>> Serial/TCP protocol detection <<<
+[00001.517]
+[00001.517] File isports.ini is present and will be used.
+[00001.517] isports.ini: /dev/ttyUSB0 (PORT:1 TYPE:1 BAUD:0)
+[00001.517] Looking for IS-X00 device on port 1 (1.52)
+[00001.517] Port 1 already in use
+[00001.517]
+[00001.517] >>> SDP protocol detection <<<
+[00001.517]
+[00001.517] Looking for SDP devices (1.52)
+[00001.517] Located isports.ini file at /home/bngzl/Documents/Final Year Project/final_year_project/src/InertiaCube4
+[00001.518]
+[00001.518] No SDP Deviced found (1.52)
+[00001.518]
+[00001.518] >>> UDP protocol detection <<<
+[00001.518]
+[00001.518] Looking for UDP Broadcasts
+[00001.718]   Checking UDP port 5001... NOT FOUND
+[00001.918]   Checking UDP port 5002... NOT FOUND
+[00002.118]   Checking UDP port 5003... NOT FOUND
+[00002.319]   Checking UDP port 5004... NOT FOUND
+[00002.519]   Checking UDP port 5005... NOT FOUND
+[00002.519]
+[00002.519] InterSense tracker not present
+[00002.519] Finished (2.52)

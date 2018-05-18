@@ -9,7 +9,8 @@ do
 	mv ${file} raw_image.jpg 
 done 
 
-cd .. 
 cd ..
+cd ..
+
 
 python main.py 

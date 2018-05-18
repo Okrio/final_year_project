@@ -7,8 +7,8 @@ def nothing(self):
 
 # Initialise video feed
 # Arg = 1 for alternative webcam 
-cap = cv2.VideoCapture(0) 
-source_img = 'images/process/cube_map.jpg'
+#cap = cv2.VideoCapture(0) 
+source_img = 'images/process/raw_image.jpg'
 cv2.namedWindow('Colourbars', cv2.WINDOW_NORMAL) 
 cv2.resizeWindow('Colourbars', 1000, 800)
 
@@ -34,8 +34,8 @@ cv2.createTrackbar(hb, wnd, 0, 255, nothing)
 
 while(True): 
 	# Capture frame by frame 
-	ret, frame = cap.read() 
-	#frame = cv2.imread(source_img, 1)
+	#ret, frame = cap.read() 
+	frame = cv2.imread(source_img, 1)
 
 	# Apply blur and convert from BGR to HSV
 	# blurred = cv2.GaussianBlur (frame, (5,5),0)

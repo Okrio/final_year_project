@@ -51,31 +51,60 @@ def displayText(img, contour, pixel_threshold):
 	cv2.putText(img, "x", (cX, cY), font, 0.5, (0, 255, 0), 1) 
 	cv2.putText(img, str(pixel_threshold), (cX, cY - 30), font, 0.5, (0,0,255), 2)
 
-def getTruePosition(pixel_position):
-	# Description: Translates xy pixel positions into real world azimuths 
-	# Input: pixel_position (1x2 array)
-	# Output: real world azimuth (float)
+def getTrueAzimuth(theta, phi, pixel_position): 
+	# Description: Translates xy pixel positions along with camera directions into true azimuths 
+	# Input: Camera direction and pixel positions in those directions 
+	# Output: True Azimuth and Inclination
 
 	# RICOH Theta Resolution: 5376x2688 pixels 
-
 	x, y = pixel_position 
+	pixel_center_x = 638 #653 #672 
+	
 
-	pixel_center_x = 2688
-	pixel_center_y = 1344
-
+	### Calculating Azimuth: 
+	#14.93 pixels = 1 azimuth degree 
 	pixel_azimuth = x - pixel_center_x 
 
-	# 14.93 pixels = 1 azimuth degree 
-	if pixel_azimuth > 0: # Right half of image
-		azimuth = round((pixel_azimuth/14.93),2) 
+	if theta == 0: # If looking directly forward 
+		if pixel_azimuth > 0: # Right half of perspective 
+			azimuth = round((pixel_azimuth/14.93), 2) 
 
-	elif pixel_azimuth < 0: # Left half of image
-		azimuth = round((pixel_azimuth/14.93),2) + 360
+		elif pixel_azimuth < 0: # Left half of perspective
+			azimuth = round((pixel_azimuth/14.93), 2) + 360 
+
+		else: 
+			azimuth = theta 
+
+	elif theta != 0: # If looking any other direction 
+		if pixel_azimuth > 0: # Right half of perspective
+			azimuth = round((pixel_azimuth/14.93), 2) + theta 
+
+		elif pixel_azimuth < 0: # Left half of perspective
+			azimuth = round((pixel_azimuth/14.93), 2) + theta 
+
+		else: 
+			azimuth = theta 
+
+	return azimuth 
+
+def getTrueElevation(theta, phi, pixel_position):
+	x, y = pixel_position 
+	pixel_center_y = 664 #675 #672 
+
+	### Calculating Elevation: 
+	# 14.93 pixels = 1 elevation degree 
+	pixel_elevation = pixel_center_y - y # Since the pixel index starts from top to bottom
+
+	if pixel_elevation > 0: # Top half of perspective 
+		elevation = round((pixel_elevation/14.93), 2) + phi
+
+	elif pixel_elevation < 0: # Bottom half of perspective 
+		elevation = round((pixel_elevation/14.93), 2) + phi 
 
 	else: 
-		azimuth = 0  
+		elevation = phi 
 
-	return azimuth
+	return elevation
 
 def extendImage(img):
 	# Description: Used to account for speaker image split across the two ends of screen 
@@ -90,6 +119,29 @@ def extendImage(img):
 	# References: 
 	# http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_core/py_basic_ops/py_basic_ops.html
 	# https://stackoverflow.com/questions/7589012/combining-two-images-with-opencv
+
+def filterColour(img): 
+	# Description: Applies a colour mask to filter out similar objects in image 
+	# Input: Image 
+	# Output: Mask 
+
+	# Filter Values: 
+	low_blue = 0
+	low_green = 0
+	low_red = 0
+	high_blue = 255 # 135
+	high_green = 137 # 146
+	high_red = 73 # 26
+
+	BGRLOW=np.array([low_blue, low_green, low_red])
+	BGRHIGH=np.array([high_blue, high_green, high_red])
+
+	#img = cv2.GaussianBlur (img, (5,5),0) # Blur image before masking 
+	mask = cv2.inRange(img, BGRLOW, BGRHIGH) # Threshold the RGB image to get desired colours
+
+	output_img = cv2.bitwise_and(img, img, mask = mask) # Bitwise-AND mask the original image 
+
+	return output_img
 
 def findSpeaker(contour): 
 	# Description: Algorithm to find distinguish speaker contour 
@@ -109,7 +161,7 @@ def findSpeaker(contour):
 
 		# Check for Flags: 
 		keepSolidity = solidity > 0.9
-		keepAspectRatio = aspect_ratio >= 0.8 and aspect_ratio <= 1.2
+		keepAspectRatio = aspect_ratio >= 0.95 and aspect_ratio <= 1.1
 		keepDims = w > 50 and h > 50
  
 		# Found Speaker: 
@@ -119,29 +171,6 @@ def findSpeaker(contour):
 			return False, [] 
 	else: 
 		return False, []
-
-def filterColour(img): 
-	# Description: Applies a colour mask to filter out similar objects in image 
-	# Input: Image 
-	# Output: Mask 
-
-	# Filter Values: 
-	low_blue = 0
-	low_green = 0
-	low_red = 0
-	high_blue = 255 # 135
-	high_green = 200 # 146
-	high_red = 117 # 26
-
-	BGRLOW=np.array([low_blue,low_green,low_red])
-	BGRHIGH=np.array([high_blue,high_green,high_red])
-
-	#img = cv2.GaussianBlur (img, (5,5),0) # Blur image before masking 
-	mask = cv2.inRange(img, BGRLOW, BGRHIGH) # Threshold the RGB image to get desired colours
-
-	output_img = cv2.bitwise_and(img, img, mask = mask) # Bitwise-AND mask the original image 
-
-	return output_img
 
 def detectSpeaker(img, troubleshoot_flag): 
 	# Description: Does a binary intensity sweep to detect and outline speaker in the image; 
@@ -170,7 +199,7 @@ def detectSpeaker(img, troubleshoot_flag):
 	# Speaker Detection Loop: 
 	# Troubleshooting Routine
 	if (troubleshoot_flag == True): 
-		while(pixel_threshold != 255):
+		while(pixel_threshold != 256):
 			# Binary intensity sweep
 			ret, th1 = cv2.threshold(blurred, pixel_threshold, 255, cv2.THRESH_BINARY_INV)
 
@@ -204,8 +233,8 @@ def detectSpeaker(img, troubleshoot_flag):
 					if 0xFF == ord('q'):
 						break
 
-			if pixel_threshold < 255: 
-				pixel_threshold += 1
+			if pixel_threshold < 256: 
+				pixel_threshold += 3
 
 			if cv2.waitKey(1) & 0xFF == ord('q'): 
 				break
@@ -236,18 +265,19 @@ def detectSpeaker(img, troubleshoot_flag):
 					cv2.drawContours(img, approx, -1, (0,0,255), 2)
 					displayText(img, c, pixel_threshold)
 					cv2.imshow('output_img', img)
-
-					return getPosition(c), cv2.contourArea(c)
+					return getPosition(c)
+					#return getPosition(c), cv2.contourArea(c)
 					
-			if pixel_threshold < 255: 
-				pixel_threshold += 1
+			if pixel_threshold < 256: 
+				pixel_threshold += 2 # Note that changing this will affect the break point
 
-			if pixel_threshold == 255: 
+			if pixel_threshold == 256: 
 				print('Speaker not found')
-				break
+				return (None,None)
 
+			# Used after analysing resulting image
 			if cv2.waitKey(1) & 0xFF == ord('q'): 
-				break
+				return (None, None)
 
 ######## Image Warping (For 360 Detection) ########
 
@@ -433,61 +463,63 @@ class Equirectangular:
         persp = cv2.remap(self._img, lon.astype(np.float32), lat.astype(np.float32), cv2.INTER_CUBIC, borderMode=cv2.BORDER_WRAP)
         return persp
 
-def scanImage(equ):
-	# Initialise Object: 
+def scanPerspectives(img, troubleshoot_flag): 
+	# Description: Generates images of the perspective of a virtual camera at the middle of a sphere
+	# Input: Image 
+	# Output: Perspective images 
 
-	# Initialise Directions: 
-	FOV = 100 
-	theta = 0 
+	fov = 90 
+	height = 1344
+	width = 1344 
 	phi = 0 
-	width = 1080
-	height = 720 
 
-	# Specify parameters(FOV, theta, phi, height, width)
-	# FOV unit is degree 
-	# theta is z-axis angle(right direction is positive, left direction is negative)
-	# phi is y-axis angle(up direction positive, down direction negative)
-	# height and width is output image dimension 
+	# Initialising list of azimuths and elevations obtained from different perspectives
+	azimuth = [] 
+	elevation = []  
 
-	for phi in range(0, 90, 30): 
-		for theta in range(0, 270, 30):
-			img = equ.GetPerspective(FOV, theta, phi, height, width)
+	# Generate map:
+	equ = Equirectangular(img)
 
-			print(theta, phi)
-			pixel_position, contourArea = detectSpeaker(img)
+	# Scan image: 
+	# Faces, Edges and Corners:
+	for theta in range (0, 360, 45): 
+		for phi in range (-45, 90, 45):
+			imgOut = equ.GetPerspective(fov, theta, phi, height, width)
+			if (troubleshoot_flag == True): 
+				cv2.namedWindow('imgOut', cv2.WINDOW_NORMAL) # Canny Edge Window Initialisation
+				cv2.resizeWindow('imgOut', 1000, 800)
+				cv2.imshow('imgOut', imgOut)
+			pixel_position = detectSpeaker(imgOut, False)
 
-			cv2.namedWindow('output_img', cv2.WINDOW_NORMAL)
-			cv2.resizeWindow('output_img', 1000, 800)
-			cv2.imshow('output_img', img)
+			if pixel_position != (None, None): 
+				print('Speaker found when facing azimuth: ' + str(theta) + ' and inclination: ' + str(phi))
+				azimuth.append(getTrueAzimuth(theta, phi, pixel_position)) 
+				elevation.append(getTrueElevation(theta, phi, pixel_position))
+	
+	# Top and Bottom: 
+	for phi in range (-90, 180, 90):
+		theta = 0
+		imgOut = equ.GetPerspective(fov, theta, phi, height, width)
+		pixel_position = detectSpeaker(imgOut, False)
 
-			if len(pixel_position) > 0: 
-				print('speaker?')
-				# if 0xFF == ord('y'):
-				# 	return 
-				# elif 0xFF == ord('n'): 
-				# 	pass 
-			else: 
-				pass 
-			# can do manual checking using input keys!
-	for phi in range(0, -90, -30): 
-		for theta in range(0, 270, 30):
-			img = equ.GetPerspective(FOV, theta, phi, height, width)
+		if pixel_position != (None, None): 
+			print('Speaker found when facing azimuth: ' + str(theta) + ' and inclination: ' + str(phi))
+			azimuth.append(getTrueAzimuth(theta, phi, pixel_position)) 
+			elevation.append(getTrueElevation(theta, phi, pixel_position))
 
-			print(theta, phi)
-			pixel_position, contourArea = detectSpeaker(img)
 
-			cv2.namedWindow('output_img', cv2.WINDOW_NORMAL)
-			cv2.resizeWindow('output_img', 1000, 800)
-			cv2.imshow('output_img', img)
+	# Return true averaged position: 
+	if len(azimuth) > 1: 
+		true_azimuth = round(sum(azimuth)/len(azimuth), 2) 
+	else: 
+		true_azimuth = azimuth[0]  
 
-			if len(pixel_position) > 0: 
-				print('speaker?')
-				# if 0xFF == ord('y'):
-				# 	return 
-				# elif 0xFF == ord('n'): 
-				# 	pass 
-			else: 
-				pass 
+	if len(elevation) > 1: 
+		true_elevation = round(sum(elevation)/len(elevation), 2)
+	else: 
+		true_elevation = elevation[0] 
+
+	return true_azimuth, true_elevation
 
 # Unwarping: 
 # https://hackaday.io/project/12384-autofan-automated-control-of-air-flow/log/41862-correcting-for-lens-distortions
