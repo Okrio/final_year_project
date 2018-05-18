@@ -35,6 +35,7 @@ Coded for use in Linux Ubuntu 16.04 terminal
 8. Plot error rate of optical measure vs the InertiaCube4 method 
 9. Read Dr Moore's paper on evaluating interpolation - find metrics to use to evaluate 
 10. Use results to do direction of arrival estimation (Dr Moore's youtube video) - request for the paper he was talking about
+11. Add in orientation detection to do out of plane detection
 
 ### Useful References: 
 1. Description of Canny Edge Detection http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_canny/py_canny.html
