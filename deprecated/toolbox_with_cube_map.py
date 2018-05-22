@@ -282,6 +282,9 @@ def detectSpeaker(img, troubleshoot_flag):
 ######## Image Warping (For 360 Detection) ########
 
 ### For Perspective Shifts: 
+# https://github.com/fuenwang/Equirec2Perspec
+# http://paulbourke.net/miscellaneous/sphere2persp/
+
 class Equirectangular:
     def __init__(self, img_name):
         self._img = cv2.imread(img_name, cv2.IMREAD_COLOR)
@@ -293,7 +296,9 @@ class Equirectangular:
     
 
     def GetPerspective(self, FOV, THETA, PHI, height, width, RADIUS = 128):
+        #
         # THETA is left/right angle, PHI is up/down angle, both in degree
+        #
 
         equ_h = self._height
         equ_w = self._width
@@ -382,6 +387,7 @@ def scanPerspectives(img, troubleshoot_flag):
 				cv2.resizeWindow('imgOut', 1000, 800)
 				cv2.imshow('imgOut', imgOut)
 			pixel_position = detectSpeaker(imgOut, False)
+			# pixel_position = detectMarker(imgOut)
 
 			if pixel_position != (None, None): 
 				print('Speaker found when facing azimuth: ' + str(theta) + ' and inclination: ' + str(phi))
@@ -393,11 +399,13 @@ def scanPerspectives(img, troubleshoot_flag):
 		theta = 0
 		imgOut = equ.GetPerspective(fov, theta, phi, height, width)
 		pixel_position = detectSpeaker(imgOut, False)
-		
+		# pixel_position = detectMarker(imgOut)
+
 		if pixel_position != (None, None): 
 			print('Speaker found when facing azimuth: ' + str(theta) + ' and inclination: ' + str(phi))
 			azimuth.append(getTrueAzimuth(theta, phi, pixel_position)) 
 			elevation.append(getTrueElevation(theta, phi, pixel_position))
+
 
 	# Return true averaged position: 
 	if len(azimuth) > 1: 
@@ -412,6 +420,112 @@ def scanPerspectives(img, troubleshoot_flag):
 
 	return true_azimuth, true_elevation
 
-# References: 
-# https://github.com/fuenwang/Equirec2Perspec
-# http://paulbourke.net/miscellaneous/sphere2persp/
+
+### For Cube Map: 
+def genMapData(image_width): 
+	# Description: Generates the coordinates to remap equirectangular image into a cube map (Feeder for remapImage function)
+	# Input: Image width
+	# Output: Cube map coordinates
+
+	in_size = [image_width, image_width * 3 / 4]
+	edge = in_size[0]/4 # The length of each edge in pixels
+
+	# Create our np arrays
+	out_pix = np.zeros((in_size[1], in_size[0], 2), dtype="f4")
+	xyz = np.zeros((in_size[1] * in_size[0] / 2, 3), dtype="f4")
+	vals = np.zeros((in_size[1] * in_size[0] / 2, 3), dtype="i4")
+
+	# Much faster to use an arange when we assign to to vals
+	start, end = 0, 0
+	rng_1 = np.arange(0, edge * 3)
+	rng_2 = np.arange(edge, edge * 2)
+
+	for i in xrange(in_size[0]):
+		# 0: back
+		# 1: left
+		# 2: front
+		# 3: right
+		face = int(i / edge)
+		rng = rng_1 if face == 2 else rng_2
+
+		end += len(rng)
+		vals[start:end, 0] = rng
+		vals[start:end, 1] = i
+		vals[start:end, 2] = face
+		start = end
+
+	# Top/bottom are special conditions
+	j, i, face = vals.T
+	face[j < edge] = 4  # top
+	face[j >= 2 * edge] = 5  # bottom
+
+	# Convert to image xyz
+	a = 2.0 * i / edge
+	b = 2.0 * j / edge
+	one_arr = np.ones(len(a))
+	for k in range(6):
+		face_idx = face == k
+
+		# Using the face_idx version of each is 50% quicker
+		one_arr_idx = one_arr[face_idx]
+		a_idx = a[face_idx]
+		b_idx = b[face_idx]
+
+		if k == 0:
+			vals_to_use =  [-one_arr_idx, 1.0 - a_idx, 3.0 - b_idx]
+		elif k == 1:
+			vals_to_use =  [a_idx - 3.0, -one_arr_idx, 3.0 - b_idx]
+		elif k == 2:
+			vals_to_use =  [one_arr_idx, a_idx - 5.0, 3.0 - b_idx]
+		elif k == 3:
+			vals_to_use =  [7.0 - a_idx, one_arr_idx, 3.0 - b_idx]
+		elif k == 4:
+			vals_to_use =  [b_idx - 1.0, a_idx - 5.0, one_arr_idx]
+		elif k == 5:
+			vals_to_use =  [5.0 - b_idx, a_idx - 5.0, -one_arr_idx]
+
+		xyz[face_idx] = np.array(vals_to_use).T
+
+	# Convert to theta and pi
+	x, y, z = xyz.T
+	theta = np.arctan2(y, x)
+	r = np.sqrt(x**2 + y**2)
+	phi = np.arctan2(z, r)
+
+	# Source img coords
+	uf = (2.0 * edge * (theta + pi) / pi) % in_size[0]
+	uf[uf==in_size[0]] = 0.0 # Wrap to pixel 0 (much faster than modulus)
+	vf = (2.0 * edge * (pi / 2 - phi) / pi)
+
+	# Mapping matrix
+	out_pix[j, i, 0] = vf
+	out_pix[j, i, 1] = uf
+
+	map_x_32 = out_pix[:, :, 1]
+	map_y_32 = out_pix[:, :, 0]
+	return map_x_32, map_y_32
+
+def remapImage(img): 
+	# Generates a cube map image from an equirectangular image 
+	# Input: Image 
+	# Output: Cubemap Image.jpg
+
+	imgIn = Image.open(img)
+	inSize = imgIn.size 
+
+	map_x_32, map_y_32 = genMapData(inSize[0])
+	cubemap = cv2.remap(np.array(imgIn), map_x_32, map_y_32, cv2.INTER_LINEAR)
+
+	imgOut = Image.fromarray(cubemap)
+	imgOut.save("images/process/cube_map.jpg")
+
+	# References: 
+	# https://pastebin.com/Eeki92Zv (key source)
+	# https://stackoverflow.com/questions/29678510/convert-21-equirectangular-panorama-to-cube-map (explanation)
+	# https://github.com/bingsyslab/360projection
+
+
+# Unwarping: 
+# https://hackaday.io/project/12384-autofan-automated-control-of-air-flow/log/41862-correcting-for-lens-distortions
+# https://www.pyimagesearch.com/2014/08/25/4-point-opencv-getperspective-transform-example/
+

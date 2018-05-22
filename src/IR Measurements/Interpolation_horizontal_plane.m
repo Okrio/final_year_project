@@ -21,7 +21,8 @@ grid_readings = csvread('/home/bngzl/Documents/Final Year Project/final_year_pro
 %measure_grid_az_deg = (0:10:350).'; % Ideal Grid
 measure_grid_az_deg = grid_readings(1:2:end-1,1); % Measured Grid
 
-interp_grid_az_deg = (5:10:355).';% Spacing between interpolated result 
+%interp_grid_az_deg = (5:10:355).';% Spacing between interpolated result 
+interp_grid_az_deg = grid_readings(2:2:end,1); % Interpolated Grid so can compare with actual measurements better
 
 fs = 48000;
 
