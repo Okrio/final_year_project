@@ -27,13 +27,17 @@ interp_grid_az_deg = grid_readings(2:2:end,1); % Interpolated Grid so can compar
 fs = 48000;
 
 % dimension of SH representation
-maxShOrd = 18;
-nSh = (maxShOrd+1)^2;
-nShCirc = 2*maxShOrd + 1;
+maxShOrd = 18; % Maximum Spherical Harmonic Order 
+nSh = (maxShOrd+1)^2; % Total no. of Spherical Harmonics = (Order + 1)^2 
+nShCirc = 2*maxShOrd + 1; % No. of spherical harmonics in horizontal plane 
 
 idc_circ = zeros(nShCirc,1);
 idc_circ(1) = 1; %ord 0 component
-for ord=1:maxShOrd % This is to select the SHs which are only affected by azimuth (outer few in the pyramid)
+
+% Generates the indices to select the spherical harmonics which are only
+% affected by azimuth (outer few in pyramid) 
+% nShCirc = 37
+for ord=1:maxShOrd
     idc_circ(1+(ord-1)*2 + [1 2]) =  1+ord^2 + ord + ord*[-1 1];
 end
 
@@ -44,20 +48,31 @@ nAzInterp = length(interp_grid_az_deg);
 measure_grid_inc_deg = 90*ones(size(measure_grid_az_deg));
 interp_grid_inc_deg = 90*ones(size(interp_grid_az_deg));
 
+
+% Find the basis spherical harmonics functions evaluated at specified
+% azimuths and inclinations: 
+
+% Output: Spherical harmonics for each direction (nAzMeasure x nSH matrix: i.e 36 x 361 matrix) 
 Ymeasure = sphBasis(deg2rad(measure_grid_az_deg),...
                     deg2rad(measure_grid_inc_deg),...
                     maxShOrd); %[nAzMeasure nSH]
-                
-Ymeasure = Ymeasure(:,idc_circ);%[nAzMeasure nShCirc] 
 
+% Limit to only the SHs that characterise the horizontal plane,
+% output Ymeasure is a 36 x 37 matrix 
+Ymeasure = Ymeasure(:,idc_circ); %[nAzMeasure nShCirc] 
+
+% Find the basis spherical harmonic functions evaluated at specified azimuths and inclinations for
+% the interpolation grid: 
 Yinterp = sphBasis(deg2rad(interp_grid_az_deg),...
                     deg2rad(interp_grid_inc_deg),...
                     maxShOrd); %[nAzInterp nSH]
                 
-Yinterp = Yinterp(:,idc_circ);%[nAzInterp nShCirc]
+Yinterp = Yinterp(:,idc_circ); %[nAzInterp nShCirc]
                                  
 nSamples = size(ir_measure,1);
 nFFT = nSamples;
+
+% Calculate the DFT of the impulse responses: 
 tf_measure = rfft(ir_measure,nFFT,1); %[nFreq nSensors, nAzMeasure]
 nFreq = size(tf_measure,1);
 fscale = (0:nFreq-1).' * (fs/nFFT);
@@ -71,27 +86,30 @@ legend(num2str(measure_grid_az_deg))
 title('Quick Plot') 
 %first arrival should be from 0 degrees
 
-% the inverse matrix maps from observed values to SH coefficients
+% The inverse matrix maps from observed values to SH coefficients
 % Ymeasure is the SH basis vectors - basically the SH coefficients 
-Yinv = pinv(Ymeasure);
+Yinv = pinv(Ymeasure); % Obtain pseudoinverse of SH basis vectors 
 
 %% do the transformation to SH domain
 % Concentrate on just one microphone signal
 % Rearranging data to plot azimuth against frequency
 measuredData = permute(tf_measure(:,irefchan,:),[3 1 2]); %[nAzMeasure nFreq] 
 
-% get the estimated SH cofficients
-% SH Coefficients 
+% Calculate the estimated SH cofficients (i.e weights) 
 est_fnm = Yinv * measuredData;
 
-% reconstruct
+% Reconstruct
+% Summation of SH coefficients with SH basis vectors to reconstruct
+% function in frequency domain
 reconstructedData = Ymeasure * est_fnm;
+% Convert back from frequency into time domain: 
 ir_reconstructed = irfft(permute(reconstructedData,[2 3 1]),nFFT,1); %[nSamples,1,nAzMeasure]
 
-% interpolate
+% Interpolate
+% Use SH basis functions defined at interpolation grid and compute using
+% SH coefficients (weights) calculated earlier 
 interpolatedData = Yinterp * est_fnm;
 ir_interpolated = irfft(permute(interpolatedData,[2 3 1]),nFFT,1); %[nSamples,1,nAzInterp]
-
 
 %% plot the measured impulse responses and the reconstructed versions
 figure;

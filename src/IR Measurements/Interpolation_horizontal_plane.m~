@@ -9,8 +9,11 @@ addpath(genpath('Interpolation of Circular Data'));
 load('ir_standardised_horizontal_plane_909b.mat'); % Obtained from IR_Standardisation.m
 
 % Initialise recorded impulse response data from ir_standardised 
-ir_measure = ir_standardised(:,:,1:2:end); % matrix with audio data from every 10 degrees starting from 0 to 
+% Last column is the directions measured 
+ir_measure = ir_standardised(:,:,1:2:end); % matrix with audio data from every 10 degrees starting from 0 to 350
+                                           % nDirections: 36 
 ir_interp_gt = ir_standardised(:,:,2:2:end); % matrix with audio data from every 10 degrees starting from 5 to 355
+                                           % nDirections: 36
 
 grid_readings = csvread('/home/bngzl/Documents/Final Year Project/final_year_project/src/Past Measurements/909b Horizontal Plane 1/Audio/rvrb_sweep_909b/azimuth_909b.csv');
 
@@ -18,14 +21,15 @@ grid_readings = csvread('/home/bngzl/Documents/Final Year Project/final_year_pro
 %measure_grid_az_deg = (0:10:350).'; % Ideal Grid
 measure_grid_az_deg = grid_readings(1:2:end-1,1); % Measured Grid
 
-interp_grid_az_deg = (5:10:355).';% Spacing between interpolated result 
+%interp_grid_az_deg = (5:10:355).';% Spacing between interpolated result 
+interp_grid_az_deg = grid_readings(2:2:end,1); % Interpolated Grid so can compare with actual measurements better
 
 fs = 48000;
 
 % dimension of SH representation
-maxShOrd = 18;
-nSh = (maxShOrd+1)^2;
-nShCirc = 2*maxShOrd + 1;
+maxShOrd = 18; % Maximum Spherical Harmonic Order 
+nSh = (maxShOrd+1)^2; % Total no. of Spherical Harmonics = (Order + 1)^2 
+nShCirc = 2*maxShOrd + 1; % No. of spherical harmonics in horizontal plane 
 
 idc_circ = zeros(nShCirc,1);
 idc_circ(1) = 1; %ord 0 component
@@ -40,6 +44,7 @@ nAzInterp = length(interp_grid_az_deg);
 measure_grid_inc_deg = 90*ones(size(measure_grid_az_deg));
 interp_grid_inc_deg = 90*ones(size(interp_grid_az_deg));
 
+% Convert gr
 Ymeasure = sphBasis(deg2rad(measure_grid_az_deg),...
                     deg2rad(measure_grid_inc_deg),...
                     maxShOrd); %[nAzMeasure nSH]
