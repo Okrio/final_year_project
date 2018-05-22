@@ -6,12 +6,16 @@ clear all;
 
 % Loading Data: 
 addpath(genpath('Interpolation of Circular Data'));
-load('ir_standardised_horizontal_plane_909b.mat');
+load('ir_standardised_horizontal_plane_909b.mat'); % Obtained from IR_Standardisation.m
 
-ir_measure = ir_standardised(:,:,1:2:end); 
-ir_interp_gt = ir_standardised(:,:,2:2:end); 
+% Initialise recorded impulse response data from ir_standardised 
+% Last column is the directions measured 
+ir_measure = ir_standardised(:,:,1:2:end); % matrix with audio data from every 10 degrees starting from 0 to 350
+                                           % nDirections: 36 
+ir_interp_gt = ir_standardised(:,:,2:2:end); % matrix with audio data from every 10 degrees starting from 5 to 355
+                                           % nDirections: 36
 
-grid_readings = csvread('/home/bngzl/Documents/Final Year Project/final_year_project/src/audio/rvrb_sweep_909b/azimuth_909b.csv');
+grid_readings = csvread('/home/bngzl/Documents/Final Year Project/final_year_project/src/Past Measurements/909b Horizontal Plane 1/Audio/rvrb_sweep_909b/azimuth_909b.csv');
 
 % Ideal Grid: 
 %measure_grid_az_deg = (0:10:350).'; % Ideal Grid
@@ -92,7 +96,7 @@ ir_interpolated = irfft(permute(interpolatedData,[2 3 1]),nFFT,1); %[nSamples,1,
 figure;
 plot(squeeze(ir_measure(:,irefchan,:)))
 hold all;
-plot(squeeze(ir_reconstructed(:,1,:)),':')
+plot(squeeze(ir_reconstructed(:,1,:)),':') % Reconstructed values are dotted lines 
 legend(num2str([measure_grid_az_deg;measure_grid_az_deg]))
 title('Measured Impulse Responses and Reconstructed Versions') 
 % hide all lines so that pairs can be turned on for comparison in plot browser window
@@ -106,7 +110,7 @@ set(gcf,'windowstyle','docked')
 figure;
 plot(squeeze(ir_interp_gt(:,irefchan,:)))
 hold all;
-plot(squeeze(ir_interpolated(:,1,:)),'--')
+plot(squeeze(ir_interpolated(:,1,:)),'--') % Interpolated values are dashed lines 
 legend(num2str([interp_grid_az_deg;interp_grid_az_deg]))
 title('Ground Truth Impulse Responses and Interpolated Versions') 
 % hide all lines so that pairs can be turned on for comparison in plot browser window
