@@ -23,19 +23,20 @@ Coded for use in Linux Ubuntu 16.04 terminal
 13. Found that Cube Mapping has difficulty detecting speaker at top left, right and bottom left, right of sphere due to splitting of image
 14. Used perspective shift to successful detect speaker at out of horizontal plane measurements https://github.com/fuenwang/Equirec2Perspec, getting around 13. 
 15. Conduct proper horizontal plane calibration measurements in large room and Interpolate 
+16. Write different scripts and use different detection parameters for horizontal and out of horizontal detection. i.e If speaker is roughly in horizontal plane, use basic algorithm in equirect format, else if in top half of plane, use perspective shift and scan top half, else if bottom half of plane, use perspective shift and scan bottom half - This will improve effectiveness and efficient of the detection and mapping (Scrapped for scanning algorithm) 
+17. Add in orientation detection to do out of plane detection (Scrapped due to wrong concept) 
 
 ### To Do: 
 1. Catch up on theoretical evaluation of interpolation 
 2. Improve detection robustness by adding condition to check last known position in y coordinates (so can detect if accidentally detect another square shape in the room) - simple tracker
 3. Verify accuracy of optical system with azimuth tracker (Plot error) 
-4. Write different scripts and use different detection parameters for horizontal and out of horizontal detection. i.e If speaker is roughly in horizontal plane, use basic algorithm in equirect format, else if in top half of plane, use perspective shift and scan top half, else if bottom half of plane, use perspective shift and scan bottom half - This will improve effectiveness and efficient of the detection and mapping 
-5. Out of horizontal plane mapping
-6. Plot interpolation results for different intervals (i.e 30 degrees instead of 10) - show how varying the number of measurements taken will change the outcome - i.e taking more measurements at smaller intervals is better, since this is the objective of the project: to take high resolution positions 
-7. Plot 3D graph of a single channel: y axis is response, x axis is sample, with each line a different direction (check iphone image) 
-8. Plot error rate of optical measure vs the InertiaCube4 method 
-9. Read Dr Moore's paper on evaluating interpolation - find metrics to use to evaluate 
-10. Use results to do direction of arrival estimation (Dr Moore's youtube video) - request for the paper he was talking about
-11. Add in orientation detection to do out of plane detection
+4. Out of horizontal plane mapping
+5. Plot interpolation results for different intervals (i.e 30 degrees instead of 10) - show how varying the number of measurements taken will change the outcome - i.e taking more measurements at smaller intervals is better, since this is the objective of the project: to take high resolution positions 
+6. Plot 3D graph of a single channel: y axis is response, x axis is sample, with each line a different direction (check iphone image) 
+7. Plot error rate of optical measure vs the InertiaCube4 method 
+8. Read Dr Moore's paper on evaluating interpolation - find metrics to use to evaluate 
+9. Use results to do direction of arrival estimation (Dr Moore's youtube video) - request for the paper he was talking about
+10. Translate orientational data of camera (pitch, yaw, roll) into directional data of speaker (azimuth and inclination) 
 
 ### Useful References: 
 1. Description of Canny Edge Detection http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_canny/py_canny.html
