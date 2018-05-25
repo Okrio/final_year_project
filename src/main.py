@@ -24,7 +24,7 @@ import glob
 
 
 ### Single image detection
-source_img = 'images/process/slanted_angle.jpg'
+source_img = 'images/process/157_az_35.9_el.jpg'
 
 troubleshoot_flag = True
 
